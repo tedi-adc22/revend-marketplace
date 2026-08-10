@@ -28,25 +28,27 @@ export default function ItemListingPage({ item, itemId }) {
           {/* LEFT: Image Gallery (7 Columns) */}
           <div className="lg:col-span-7 flex gap-4">
             {/* Thumbnails list */}
-            {/* <div className="flex flex-col gap-3 shrink-0">
-              {item.images.map((imgUrl, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`w-16 h-16 rounded-xl border-2 overflow-hidden bg-gray-100 transition-all ${
-                    activeImageIndex === idx
-                      ? "border-black ring-2 ring-black/5"
-                      : "border-transparent hover:border-gray-300 opacity-70 hover:opacity-100"
-                  }`}
-                >
-                  <img
-                    src={imgUrl}
-                    alt={`Thumbnail ${idx + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))}
-            </div> */}
+            {item.images.length > 1 && (
+              <div className="flex flex-col gap-3 shrink-0">
+                {item.images.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`w-16 h-16 rounded-xl border-2 overflow-hidden bg-gray-100 transition-all ${
+                      activeImageIndex === idx
+                        ? "border-black ring-2 ring-black/5"
+                        : "border-transparent hover:border-gray-300 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Main Featured Image Display */}
             <div className="relative flex-1 aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group">
@@ -55,6 +57,11 @@ export default function ItemListingPage({ item, itemId }) {
                 alt={item.title}
                 className="w-full h-full object-contain p-4"
               />
+
+              {/* Photo Counter Badge */}
+              <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+                {activeImageIndex + 1} / {item.images.length}
+              </div>
 
               {/* Action Buttons Top-Right */}
               <div className="absolute top-4 right-4 flex items-center gap-2">
