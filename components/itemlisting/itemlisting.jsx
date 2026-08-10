@@ -28,7 +28,7 @@ export default function ItemListingPage({ item, itemId }) {
           {/* LEFT: Image Gallery (7 Columns) */}
           <div className="lg:col-span-7 flex gap-4">
             {/* Thumbnails list */}
-            <div className="flex flex-col gap-3 shrink-0">
+            {/* <div className="flex flex-col gap-3 shrink-0">
               {item.images.map((imgUrl, idx) => (
                 <button
                   key={idx}
@@ -46,7 +46,7 @@ export default function ItemListingPage({ item, itemId }) {
                   />
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* Main Featured Image Display */}
             <div className="relative flex-1 aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group">

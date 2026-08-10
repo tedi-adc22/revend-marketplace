@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
-  // Await params in Next.js App Router
   const { itemId } = await params;
-  console.log("params from api route", params);
-  console.log("api itemId =", itemId);
+  console.log("API HIT — itemId:", itemId);
 
   const testItemListing = {
     id: itemId,
@@ -41,6 +39,5 @@ Includes original Dell USB-C charger. Battery health is listed as "Excellent" in
     ],
   };
 
-  // return NextResponse.json(testItemListing, { status: 200 });
-  return NextResponse.json(testItemListing, { status: 200 });
+  return NextResponse.json(testItemListing);
 }

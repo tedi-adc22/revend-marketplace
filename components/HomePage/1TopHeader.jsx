@@ -7,7 +7,7 @@ export default function TopHeader() {
         {/* Logo */}
         <a
           href="#"
-          className="text-4xl font-bold tracking-tight text-black shrink-0"
+          className="text-4xl font-bold tracking-tight text-blue-500 shrink-0"
         >
           Revend
         </a>
@@ -18,7 +18,7 @@ export default function TopHeader() {
             <input
               type="text"
               placeholder="Search for anything..."
-              className="w-full pl-5 pr-21 py-2 text-sm border border-gray-600 rounded-full focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+              className="w-full pl-5 pr-21 py-2 text-sm border bg-amber-50 border-gray-600 rounded-full focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
             />
             <button className="absolute right-1 p-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full transition-colors flex items-center justify-center w-8 h-8">
               <svg

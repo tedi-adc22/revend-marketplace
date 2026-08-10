@@ -3,17 +3,28 @@ import { notFound } from "next/navigation";
 
 async function getItem(itemId) {
   // Absolute URL is required when fetching on the server
-  const res = await fetch(`http://localhost:3000/api/dataFolder/${itemId}`, {
+  // const res = await fetch(`http://localhost:3000/api/dataFolder/${itemId}`, {
+  //   cache: "no-store", // Ensures fresh data or use revalidate
+  // });
+
+  const res = await fetch(`http://localhost:3000/api/superTest1/${itemId}`, {
     cache: "no-store", // Ensures fresh data or use revalidate
   });
 
-  if (!res.ok) return null;
+  console.log("Response from API:", res);
+
+  if (!res.ok) {
+    const text = await res.text();
+    // console.log("error body:", text);
+    return null;
+  }
   return res.json();
 }
 
 export default async function itemListing({ params }) {
   const { itemId } = await params;
-  console.log(itemId);
+  console.log("itemlisng Itemid page- ", itemId);
+
   const item = await getItem(itemId);
   console.log("The fetched item:", item);
 
