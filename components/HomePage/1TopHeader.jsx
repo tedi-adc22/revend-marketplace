@@ -47,30 +47,20 @@ export default function TopHeader() {
         </div>
 
         {/* Right Actions: Sign In & Cart */}
-        <div className="flex items-center space-x-6 text-sm font-medium shrink-0">
-          <a href="#" className="hover:text-blue-600 transition-colors">
-            Sign in
-          </a>
-
-          <a
-            href="#"
-            className="relative p-1 text-gray-700 hover:text-black transition-colors"
-            aria-label="Cart"
+        <div className="flex items-center space-x-2 text-sm font-medium shrink-0">
+          <Link
+            href="/signin"
+            className="hover:text-blue-600 transition-colors"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
-              />
-            </svg>
-          </a>
+            Sign in
+          </Link>
+          <span> or</span>
+          <Link
+            href="/register"
+            className="hover:text-blue-600 transition-colors"
+          >
+            Register
+          </Link>
         </div>
       </div>
     </header>
