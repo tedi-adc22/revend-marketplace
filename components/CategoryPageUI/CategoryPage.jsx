@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import PriceRangeSlider from "./PriceRangeSlider";
 
 // Mock sample data
 const MOCK_ITEMS = [
@@ -60,6 +61,7 @@ export default function CategoryPage({ params }) {
     <div className="min-h-screen bg-gray-50 text-gray-900 pb-16 font-sans">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         {/* CATEGORY TITLE & HEADER */}
+
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">
             {categoryName}
@@ -72,7 +74,7 @@ export default function CategoryPage({ params }) {
             Filters:
           </span>
 
-          <button className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors">
+          {/* <button className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors">
             Price Range
             <svg
               className="w-3.5 h-3.5 text-gray-400"
@@ -87,7 +89,15 @@ export default function CategoryPage({ params }) {
                 d="M19 9l-7 7-7-7"
               />
             </svg>
-          </button>
+          </button> */}
+          <PriceRangeSlider
+            min={0}
+            max={1000}
+            step={10}
+            onPriceChange={(range) =>
+              console.log("Selected Price Range:", range)
+            }
+          />
 
           <button className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors">
             Condition

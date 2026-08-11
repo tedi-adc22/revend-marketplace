@@ -16,11 +16,12 @@ export default function TopHeader() {
           href="/"
           className="text-4xl font-bold tracking-tight text-blue-500 shrink-0"
         >
-          Revend
+          <span className="text-blue-500 ">Re</span>
+          <span className="text-gray-600">vend</span>
         </Link>
 
         {/* Search Bar */}
-        <div className="flex-1 max-w-3xl">
+        <div className="flex-1 max-w-3xl ">
           <div className="relative flex items-center">
             <input
               type="text"
