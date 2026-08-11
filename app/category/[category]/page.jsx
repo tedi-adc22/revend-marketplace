@@ -1,5 +1,7 @@
 import CategoryPage from "@/components/CategoryPageUI/CategoryPage";
 
-export default function Category({ category }) {
-  return <CategoryPage params={category} />;
+export default async function Category({ params }) {
+  const { category } = await params;
+
+  return <CategoryPage category={category} />;
 }

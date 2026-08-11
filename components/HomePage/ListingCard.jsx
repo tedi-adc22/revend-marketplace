@@ -4,13 +4,13 @@ import Link from "next/link";
 
 export const ListingCard = ({ listing }) => {
   return (
-    <Link href={`/itemListing/${listing.id}`} className="flex flex-col">
+    <Link href={`/item/${listing.id}`} className="flex flex-col">
       <div className="group cursor-pointer flex flex-col">
         {/* Image Container */}
         <div className="relative w-full aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center p-4">
-          {listing.images[0] || listing.image ? (
+          {listing.images[0] ? (
             <img
-              src={listing.images[0] || listing.image}
+              src={listing.images[0]}
               alt={listing.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />

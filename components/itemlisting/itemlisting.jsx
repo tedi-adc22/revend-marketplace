@@ -15,9 +15,6 @@ export default function ItemListingPage({ item, itemId }) {
     notFound();
   }
 
-  const images =
-    item.images && item.images.length > 0 ? item.images : item.title;
-
   const nextImage = () => {
     setActiveImageIndex((prev) => (prev + 1) % item.images.length);
   };
@@ -142,7 +139,7 @@ export default function ItemListingPage({ item, itemId }) {
             {/* Box 1: Date, Title, Location */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
               <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{item.dateListed}</span>
+                <span>{item.createdAt}</span>
               </div>
 
               <h1 className="text-xl font-bold text-gray-900 leading-snug">
@@ -199,7 +196,7 @@ export default function ItemListingPage({ item, itemId }) {
               <div className="flex items-center gap-4">
                 <img
                   src={item.seller.avatar}
-                  alt={item.seller.name}
+                  alt={item.seller.username}
                   className="w-14 h-14 rounded-full object-cover border border-gray-200"
                 />
                 <div className="flex-1">

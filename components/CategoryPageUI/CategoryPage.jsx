@@ -4,14 +4,17 @@ import React, { useState } from "react";
 import Link from "next/link";
 import PriceRangeSlider from "./PriceRangeSlider";
 import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
+import slugify from "slugify";
 
 // Mock sample data
 
-export default function CategoryPage({ params }) {
+export default function CategoryPage({ category }) {
   // Format slug to readable title e.g. "electronics" -> "Electronics"
-  const categoryName = params?.category
-    ? params.category.charAt(0).toUpperCase() + params.category.slice(1)
-    : "Electronics";
+  console.log("category received in CategoryPage:", category);
+  let categoryName = category
+    ? (category.charAt(0).toUpperCase() + category.slice(1)).replace(/-/g, " ")
+    : // + category.slice(1)
+      "All";
 
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'grid'
   const [selectedSort, setSelectedSort] = useState("Best Match");
@@ -183,8 +186,8 @@ export default function CategoryPage({ params }) {
           {MOCK_ITEMS.map((item) => (
             <Link
               key={item.id}
-              href={`/itemListing/${item.id}`}
-              className="block group bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+              href={`/item/${item.id}`}
+              className="block group bg-white rounded-lg border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
             >
               {viewMode === "list" ? (
                 /* HORIZONTAL LIST CARD (Matches Mockup) */
@@ -192,7 +195,7 @@ export default function CategoryPage({ params }) {
                   {/* Left Column: Image + Core Details */}
                   <div className="sm:w-1/2 p-4 flex gap-4 border-b sm:border-b-0 sm:border-r border-gray-100">
                     {/* Thumbnail Image */}
-                    <div className="relative w-36 h-36 shrink-0 rounded-xl bg-gray-100 overflow-hidden border border-gray-100">
+                    <div className="relative w-36 h-36 shrink-0 rounded-md bg-gray-100 overflow-hidden border border-gray-100">
                       <img
                         src={item.images[0]}
                         alt={item.title}
