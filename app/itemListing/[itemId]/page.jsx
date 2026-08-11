@@ -1,5 +1,6 @@
-import ItemListingPage from "@/components/itemlisting/itemlisting";
+import ItemListingPage from "@/components/itemlisting/ItemListing";
 import { notFound } from "next/navigation";
+import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
 async function getItem(itemId) {
   // Absolute URL is required when fetching on the server
@@ -23,9 +24,13 @@ async function getItem(itemId) {
 
 export default async function itemListing({ params }) {
   const { itemId } = await params;
-  console.log("itemlisng Itemid page- ", itemId);
 
-  const item = await getItem(itemId);
+  // const item = await getItem(itemId);
+  const item = MOCK_ITEMS.find((item) => item.id === itemId);
+
+  if (!item) {
+    notFound();
+  }
   console.log("The fetched item:", item);
 
   return (

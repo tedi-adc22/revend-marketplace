@@ -1,5 +1,6 @@
 // SHOULD BE FETURES ITEMS
 import { ListingCard } from "./ListingCard";
+import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
 const featuredCategories = [
   { name: "Laptops", bg: "bg-gray-200" },
@@ -142,7 +143,7 @@ export default function MainContent() {
           </a>
         </div>
 
-        <MarketplaceGrid hotListings={hotListings} />
+        <MarketplaceGrid hotListings={MOCK_ITEMS} />
       </section>
     </main>
   );

@@ -3,50 +3,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import PriceRangeSlider from "./PriceRangeSlider";
+import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
 // Mock sample data
-const MOCK_ITEMS = [
-  {
-    id: "1",
-    title: "DJI Osmo Action 5 Pro Essential Combo",
-    price: "$349.00",
-    condition: "Like New",
-    location: "Austin, TX",
-    lister: "alex_r",
-    description:
-      "Barely used DJI Osmo Action 5 Pro. Comes with extra battery, protective frame, and original box. Perfect for vloggers and sports recording.",
-    images: [
-      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
-    ],
-    badge: "Urgent",
-  },
-  {
-    id: "2",
-    title: "Sony WH-1000XM5 Wireless Headphones",
-    price: "$280.00",
-    condition: "Excellent",
-    location: "Dallas, TX",
-    lister: "tech_guru",
-    description:
-      "Active noise-canceling headphones in pristine condition. Includes hard carrying case, 3.5mm audio cable, and USB-C charging cord.",
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "3",
-    title: "Apple iPad Pro 11-inch M2 (256GB, Wi-Fi)",
-    price: "$650.00",
-    condition: "Good",
-    location: "Houston, TX",
-    lister: "sarah_m",
-    description:
-      "Screen has always had a glass protector. Slight cosmetic wear on the back corners, fully functional. Battery health at 94%.",
-    images: [
-      "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=600&auto=format&fit=crop",
-    ],
-  },
-];
 
 export default function CategoryPage({ params }) {
   // Format slug to readable title e.g. "electronics" -> "Electronics"
@@ -224,7 +183,7 @@ export default function CategoryPage({ params }) {
           {MOCK_ITEMS.map((item) => (
             <Link
               key={item.id}
-              href={`/item/${item.id}`}
+              href={`/itemListing/${item.id}`}
               className="block group bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
             >
               {viewMode === "list" ? (
@@ -270,7 +229,7 @@ export default function CategoryPage({ params }) {
                           {item.title}
                         </h3>
                         <p className="text-xl font-black text-gray-900 mt-1">
-                          {item.price}
+                          ${item.price}
                         </p>
                       </div>
 
@@ -300,7 +259,7 @@ export default function CategoryPage({ params }) {
                         <p className="text-xs text-gray-400">
                           Listed by{" "}
                           <span className="font-semibold text-gray-600">
-                            @{item.lister}
+                            {item.seller.username}
                           </span>
                         </p>
                       </div>

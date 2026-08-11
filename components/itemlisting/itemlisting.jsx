@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { notFound } from "next/navigation";
+import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
 export default function ItemListingPage({ item, itemId }) {
   //   const itemId = React.use(params)?.itemId || "1";
@@ -178,7 +180,7 @@ export default function ItemListingPage({ item, itemId }) {
                   Price
                 </p>
                 <p className="text-3xl font-extrabold text-gray-900 mt-0.5">
-                  {item.price}
+                  ${item.price}
                 </p>
               </div>
 
@@ -202,7 +204,7 @@ export default function ItemListingPage({ item, itemId }) {
                 />
                 <div className="flex-1">
                   <h3 className="text-base font-bold text-gray-900">
-                    {item.seller.name}
+                    {item.seller.username}
                   </h3>
                 </div>
               </div>

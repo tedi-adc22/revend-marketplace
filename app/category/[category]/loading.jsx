@@ -1,3 +1,5 @@
+import CategoryPage from "@/components/CategoryPageUI/CategoryPage";
+
 export default function Category({ category }) {
-  return <div>LOADING THE {category}</div>;
+  return <CategoryPage className="loading" params={category} />;
 }

@@ -39,5 +39,32 @@ Includes original Dell USB-C charger. Battery health is listed as "Excellent" in
     ],
   };
 
-  return NextResponse.json(testItemListing);
+  const TEST_ITEM = [
+    {
+      id: "1",
+      title: "DJI Osmo Action 5 Pro Essential Combo",
+      price: 349.0,
+      condition: "Like New",
+      location: "Austin, TX",
+      description:
+        "Barely used DJI Osmo Action 5 Pro. Comes with extra battery, protective frame, and original box. Perfect for vloggers and sports recording.",
+      images: [
+        "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop",
+      ],
+      status: "available",
+      category: "electronics",
+      createdAt: "2024-06-15T10:00:00Z",
+      lastEditedAt: "2024-06-15T10:00:00Z",
+      viewCount: 128,
+      seller: {
+        id: "user_123",
+        username: "alex_r",
+        avatar:
+          "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        isPremium: true,
+      },
+    },
+  ];
+
+  return NextResponse.json(itemId === "1" ? TEST_ITEM[0] : testItemListing);
 }
