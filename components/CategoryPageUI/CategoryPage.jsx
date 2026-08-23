@@ -179,7 +179,7 @@ export default function CategoryPage({ category }) {
         <div
           className={
             viewMode === "grid"
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6"
               : "space-y-4"
           }
         >
@@ -195,7 +195,7 @@ export default function CategoryPage({ category }) {
                   {/* Left Column: Image + Core Details */}
                   <div className="sm:w-1/2 p-4 flex gap-4 border-b sm:border-b-0 sm:border-r border-gray-100">
                     {/* Thumbnail Image */}
-                    <div className="relative w-36 h-36 shrink-0 rounded-md bg-gray-100 overflow-hidden border border-gray-100">
+                    <div className="relative w-50 h-36 shrink-0 rounded-md bg-gray-100 overflow-hidden border border-gray-100">
                       <img
                         src={item.images[0]}
                         alt={item.title}
@@ -304,7 +304,7 @@ export default function CategoryPage({ category }) {
                   </div>
                   <div>
                     <p className="text-lg font-black text-gray-900">
-                      {item.price}
+                      ${item.price}
                     </p>
                     <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
                       {item.title}

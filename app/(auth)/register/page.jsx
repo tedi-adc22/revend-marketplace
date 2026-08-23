@@ -39,8 +39,8 @@ export default function RegisterPage() {
               href="/"
               className="text-3xl font-black tracking-tight inline-block"
             >
-              <span className="text-blue-600">Re</span>
-              <span className="text-gray-900">vend</span>
+              <span className="text-blue-500">Re</span>
+              <span className="text-gray-600">vend</span>
             </Link>
           </div>
           <CardTitle className="text-xl font-bold text-gray-900">
