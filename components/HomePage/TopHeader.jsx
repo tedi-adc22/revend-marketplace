@@ -1,7 +1,29 @@
 "use client";
 import Link from "next/link";
+import { signOutAction } from "@/lib/actions/users";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import toast from "react-hot-toast";
 
-export default function TopHeader() {
+export default function TopHeader({ user }) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleClickSignOutButton = () => {
+    startTransition(async () => {
+      const { errorMessage } = await signOutAction();
+
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        router.push("/");
+        toast.success("Successfully signed out");
+      }
+    });
+    console.log(user);
+  };
+
   return (
     <header className="sticky top-0 z-50  bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
@@ -48,6 +70,42 @@ export default function TopHeader() {
 
         {/* Right Actions: Sign In & Cart */}
         <div className="flex items-center space-x-2 text-sm font-medium shrink-0">
+          {user ? (
+            <>
+              <Link
+                href="/account"
+                className="hover:text-blue-600 transition-colors font-semibold"
+              >
+                My Account
+              </Link>
+
+              <button
+                onClick={handleClickSignOutButton}
+                className="hover:text-blue-600 transition-colors"
+                disabled={isPending}
+              >
+                {isPending ? <Loader2 className="animate-spin" /> : "Sign Out"}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/signin"
+                className="hover:text-blue-600 transition-colors"
+              >
+                Sign in
+              </Link>
+              <span>or</span>
+              <Link
+                href="/register"
+                className="hover:text-blue-600 transition-colors"
+              >
+                Register
+              </Link>
+            </>
+          )}
+
+          {/* 
           <Link
             href="/signin"
             className="hover:text-blue-600 transition-colors"
@@ -60,7 +118,7 @@ export default function TopHeader() {
             className="hover:text-blue-600 transition-colors"
           >
             Register
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

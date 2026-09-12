@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import FloatingInput from "@/components/AuthComponents/FloatingInput";
 import {
@@ -12,21 +12,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
+import { loginAction } from "../../../lib/actions/users";
 
 export default function SignInPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
+  const handleSubmitLogin = (formData) => {
+    startTransition(async () => {
+      const { errorMessage } = await loginAction(formData);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Sign in submitted:", formData);
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        router.push("/");
+        toast.success("Successfully logged in");
+      }
+    });
   };
 
   return (
@@ -91,40 +96,40 @@ export default function SignInPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form action={handleSubmitLogin} className="space-y-3">
             <FloatingInput
               id="email"
+              name="email"
               label="Email address"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
               required
+              disabled={isPending}
             />
 
-            <div className="space-y-1">
-              <FloatingInput
-                id="password"
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <div className="flex justify-end pt-1">
-                <Link
-                  href="/forgot-password"
-                  className="text-xs font-semibold text-blue-600 hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+            <FloatingInput
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              minLength={8}
+              required
+              disabled={isPending}
+            />
+            <div className="flex justify-end pt-1">
+              <Link
+                href="/forgot-password"
+                className="text-xs font-semibold text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm h-12 rounded-xl transition-all shadow-sm mt-2"
+              disabled={isPending}
             >
-              Sign In
+              {isPending ? <Loader2 className="animate-spin" /> : "Sign in"}
             </Button>
           </form>
         </CardContent>

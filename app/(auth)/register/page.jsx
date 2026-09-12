@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import FloatingInput from "@/components/AuthComponents/FloatingInput";
 import {
@@ -13,21 +13,26 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+import { createAccountAction } from "../../../lib/actions/users";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
+  const handleSubmitRegisterAccount = (formData) => {
+    startTransition(async () => {
+      const { errorMessage } = await createAccountAction(formData);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("New Register submitted:", formData);
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        router.push("/");
+        toast.success("Verification link has been sent to your email");
+      }
+    });
   };
 
   return (
@@ -93,38 +98,43 @@ export default function RegisterPage() {
         </div>
 
         <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form action={handleSubmitRegisterAccount} className="space-y-3">
             <FloatingInput
-              id="name"
+              id="userName"
+              name="userName"
               label="Full name"
-              value={formData.name}
-              onChange={handleChange}
               required
+              disabled={isPending}
             />
 
             <FloatingInput
               id="email"
+              name="email"
               label="Email address"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
               required
+              disabled={isPending}
             />
 
             <FloatingInput
               id="password"
+              name="password"
               label="Password"
               type="password"
-              value={formData.password}
-              onChange={handleChange}
+              minLength={8}
               required
+              disabled={isPending}
             />
 
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm h-12 rounded-xl transition-all shadow-sm mt-2"
             >
-              Create Account
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Create Account"
+              )}
             </Button>
           </form>
         </CardContent>

@@ -5,20 +5,26 @@ import { Input } from "@/components/ui/input";
 
 export default function FloatingInput({
   id,
+  name,
   label,
   value,
   onChange,
   type = "text",
   required = false,
+  disabled = false,
+  ...rest
 }) {
   return (
     <div className="relative">
       <Input
         id={id}
+        name={name}
         type={type}
         value={value}
         onChange={onChange}
         required={required}
+        disabled={disabled}
+        {...rest}
         placeholder=" " /* MUST keep a single space here for :placeholder-shown to work */
         className="peer h-14 pt-5 pb-2 px-4 rounded-xl border-gray-200 bg-gray-50/50 focus:bg-white text-sm font-semibold focus:border-gray-900 focus:ring-0 transition-all placeholder-transparent"
       />
