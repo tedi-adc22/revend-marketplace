@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
-import { loginAction } from "../../../lib/actions/users";
+import { loginAction } from "@/lib/actions/users";
 
 export default function SignInPage() {
   const [isPending, startTransition] = useTransition();

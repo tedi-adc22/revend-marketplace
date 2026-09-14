@@ -1,0 +1,334 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { createListingAction } from "@/lib/actions/listings";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Upload, X, Loader2, DollarSign, MapPin, Euro } from "lucide-react";
+
+// const CATEGORIES = [
+//   "electronics",
+//   "vehicles",
+//   "real-estate",
+//   "apparel-and-accessories",
+//   "entertainment",
+//   "hobbies",
+//   "industrial-equipment",
+//   "home-and-garden",
+// ];
+
+const CATEGORIES = [
+  { label: "Electronics", value: "electronics" },
+  { label: "Vehicles", value: "vehicles" },
+  { label: "Real Estate", value: "real-estate" },
+  { label: "Apparel & Accessories", value: "apparel-and-accessories" },
+  { label: "Entertainment", value: "entertainment" },
+  { label: "Hobbies", value: "hobbies" },
+  { label: "Industrial Equipment", value: "industrial-equipment" },
+  { label: "Home & Garden", value: "home-and-garden" },
+];
+
+const CONDITIONS = ["New", "Like New", "Good", "Ok", "Poor"];
+
+const MAX_IMAGES = 3;
+const MAX_WORDS = 300;
+const MAX_PRICE = 5000000;
+
+export default function NewListingForm() {
+  const [isPending, startTransition] = useTransition();
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [description, setDescription] = useState("");
+  const router = useRouter();
+
+  // Calculate live word count
+  const wordCount = description.length;
+  const isWordLimitExceeded = wordCount > MAX_WORDS;
+
+  // Handle Description Change with Word Limit Check
+  const handleDescriptionChange = (e) => {
+    const text = e.target.value;
+    const words = text.trim() === "" ? [] : text.trim().split(/\s+/);
+
+    // Allow typing if under the limit, OR if deleting characters
+    if (words.length <= MAX_WORDS || text.length < description.length) {
+      setDescription(text);
+    } else {
+      toast.error(`Maximum limit of ${MAX_WORDS} words reached!`, {
+        id: "word-limit",
+      });
+    }
+  };
+
+  // Handle Image Upload with 3-Image Max Limit
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    if (selectedImages.length + files.length > MAX_IMAGES) {
+      toast.error(`You can only upload up to ${MAX_IMAGES} images.`);
+      return;
+    }
+
+    const newPreviews = files.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+    setSelectedImages((prev) => [...prev, ...newPreviews]);
+  };
+
+  const removeImage = (indexToRemove) => {
+    setSelectedImages((prev) => {
+      const updated = prev.filter((_, index) => index !== indexToRemove);
+      URL.revokeObjectURL(prev[indexToRemove].previewUrl);
+      return updated;
+    });
+  };
+
+  const handleSubmitNewListing = (e) => {
+    e.preventDefault();
+
+    if (isWordLimitExceeded) {
+      toast.error("Please reduce your description to 250 words or less.");
+      return;
+    }
+
+    console.log("----------------- FORM DATA ---------EEE1", e);
+
+    const formData = new FormData(e.currentTarget);
+    console.log("----------------- FORM DATA ---------NEW FORM DATA", formData);
+
+    formData.delete("images");
+    selectedImages.forEach((imgObj) => {
+      formData.append("images", imgObj.file);
+    });
+
+    console.log(
+      "----------------- FORM DATA ---------IMAGES APPEND FORM DATA",
+      formData,
+    );
+
+    startTransition(async () => {
+      const { errorMessage } = await createListingAction(formData);
+
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        toast.success("Listing created successfully!");
+        router.push("/account");
+      }
+    });
+  };
+
+  return (
+    <Card className="max-w-2xl mx-auto shadow-sm border-gray-200">
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">
+          Create a New Listing
+        </CardTitle>
+        <CardDescription>
+          Fill out the details to post your item on the marketplace.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmitNewListing} className="space-y-6">
+          {/* Title Input */}
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" name="title" required disabled={isPending} />
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <div className="relative">
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={handleDescriptionChange}
+                required
+                disabled={isPending}
+                rows={4}
+                placeholder="Describe the condition, specs, reason for selling..."
+                className="w-full rounded-md border border-input bg-background px-3 py-2 pb-7 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y break-words"
+              />
+              {/* Bottom Right Live Counter */}
+              <div
+                className={`absolute bottom-2 right-3 text-xs font-medium pointer-events-none transition-colors ${
+                  wordCount >= MAX_WORDS
+                    ? "text-red-500 font-bold"
+                    : "text-muted-foreground"
+                }`}
+              >
+                {wordCount} / {MAX_WORDS} Characters
+              </div>
+            </div>
+          </div>
+
+          {/* Price and Location */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Price (€) */}
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (€)</Label>
+              <div className="relative flex items-center">
+                <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  className="pl-9"
+                  required
+                  disabled={isPending}
+                  onInput={(e) => {
+                    if (Number(e.target.value) > MAX_PRICE) {
+                      e.target.value = MAX_PRICE.toString();
+                      toast.error("Maximum allowed price is 5,000,000 €", {
+                        id: "max-price",
+                      });
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <div className="relative flex items-center">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="location"
+                  name="location"
+                  placeholder="e.g. Sofia, BG"
+                  className="pl-9"
+                  required
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Condition and Category  */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="condition">Condition</Label>
+              <select
+                id="condition"
+                name="condition"
+                required
+                disabled={isPending}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {CONDITIONS.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <select
+                id="category"
+                name="category"
+                required
+                disabled={isPending}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Image Dropzone with Limit Counter */}
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label>Item Images</Label>
+              <span className="text-xs text-muted-foreground font-medium">
+                {selectedImages.length} / {MAX_IMAGES} uploaded
+              </span>
+            </div>
+
+            {selectedImages.length < MAX_IMAGES && (
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:bg-gray-50/50 transition-colors cursor-pointer relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                  disabled={isPending || selectedImages.length >= MAX_IMAGES}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <div className="text-sm">
+                    <span className="font-semibold text-primary">
+                      Click to upload
+                    </span>{" "}
+                    (Max {MAX_IMAGES} photos)
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Image Previews */}
+            {selectedImages.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                {selectedImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-square rounded-md overflow-hidden border group"
+                  >
+                    <img
+                      src={img.previewUrl}
+                      alt={`Preview ${idx + 1}`}
+                      className="object-cover w-full h-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute top-1 right-1 bg-black/60 hover:bg-black text-white p-1 rounded-full transition-colors"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isPending || selectedImages.length === 0}
+            className="w-full h-11"
+          >
+            {isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Create Listing"
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

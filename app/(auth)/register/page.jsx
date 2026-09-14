@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { createAccountAction } from "../../../lib/actions/users";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { createAccountAction } from "@/lib/actions/users";
 
 export default function RegisterPage() {
   const [isPending, startTransition] = useTransition();

@@ -21,7 +21,6 @@ export default function TopHeader({ user }) {
         toast.success("Successfully signed out");
       }
     });
-    console.log(user);
   };
 
   return (
