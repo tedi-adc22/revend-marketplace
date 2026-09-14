@@ -57,7 +57,7 @@ export const ListingCard = ({ listing }) => {
 
             {/* Price */}
             <p className="text-lg font-bold text-gray-900 mt-1">
-              ${listing.price}
+              €{listing.price}
             </p>
           </div>
 

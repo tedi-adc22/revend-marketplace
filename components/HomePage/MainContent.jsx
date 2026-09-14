@@ -147,7 +147,7 @@ export default async function MainContent() {
             Hot items right now / Most viewed this week
           </h2>
           <a
-            href="#"
+            href="/category/all"
             className="text-sm font-medium text-blue-600 hover:underline"
           >
             View all

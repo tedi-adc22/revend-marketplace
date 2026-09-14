@@ -3,11 +3,10 @@ import { createSupabaseClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 12;
 
-export default async function Category({ params, searchParams }) {
-  const { category } = await params;
+export default async function AllCategoryPage({ searchParams }) {
   const sParams = await searchParams;
 
-  const currentPage = Math.max(1, parseInt(sParams.page || "1", 10));
+  const currentPage = Math.max(1, parseInt(sParams?.page || "1", 10));
   const minPrice = sParams.minPrice ? Number(sParams.minPrice) : null;
   const maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : null;
   const condition =
@@ -19,12 +18,12 @@ export default async function Category({ params, searchParams }) {
 
   const supabase = await createSupabaseClient();
 
-  // Ceiling for the slider — the highest price among ALL listings in this
-  // category, unaffected by whatever the user currently has filtered to.
+  // Ceiling for the slider — the highest price across ALL active listings,
+  // unaffected by whatever the user currently has filtered to.
   const { data: maxPriceItem } = await supabase
     .from("listings")
     .select("price")
-    .eq("category", category)
+    .eq("status", "active")
     .order("price", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -33,11 +32,11 @@ export default async function Category({ params, searchParams }) {
     ? Math.ceil(Number(maxPriceItem.price))
     : 1000;
 
-  // Build the actual filtered/paginated query
+  // Query all active listings, filtered/sorted/paginated
   let query = supabase
     .from("listings")
     .select("*, seller:profiles(username)", { count: "exact" })
-    .eq("category", category);
+    .eq("status", "active");
 
   if (minPrice !== null) query = query.gte("price", minPrice);
   if (maxPrice !== null) query = query.lte("price", maxPrice);
@@ -54,14 +53,14 @@ export default async function Category({ params, searchParams }) {
   const { data: listings, count, error } = await query.range(from, to);
 
   if (error) {
-    console.error("Error fetching category listings:", error.message);
+    console.error("Error fetching all listings:", error.message);
   }
 
   const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
   return (
     <CategoryPage
-      category={category}
+      category="all"
       initialListings={listings || []}
       currentPage={currentPage}
       totalPages={totalPages}

@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import slugify from "slugify";
 
 const categories = [
   { label: "Electronics", value: "electronics" },
