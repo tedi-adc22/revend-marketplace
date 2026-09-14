@@ -26,7 +26,7 @@ export default function AccountPageClient({ user, listings = [] }) {
   const email = user.email;
   const isPremium = user.user_metadata?.isPremium || false;
 
-  const listingLimit = isPremium ? 20 : 5;
+  const listingLimit = isPremium ? 20 : 500;
   const listingsUsed = listings.length;
 
   const isLimitReached = listingsUsed >= listingLimit;
