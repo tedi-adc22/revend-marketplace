@@ -1,37 +1,22 @@
 import ItemListingPage from "@/components/itemlisting/ItemListing";
 import { notFound } from "next/navigation";
-import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
+import { createSupabaseClient } from "@/lib/supabase/server";
 
-async function getItem(itemId) {
-  // Absolute URL is required when fetching on the server
-  // const res = await fetch(`http://localhost:3000/api/dataFolder/${itemId}`, {
-  //   cache: "no-store", // Ensures fresh data or use revalidate
-  // });
-
-  const res = await fetch(`http://localhost:3000/api/superTest1/${itemId}`, {
-    cache: "no-store", // Ensures fresh data or use revalidate
-  });
-
-  console.log("Response from API:", res);
-
-  if (!res.ok) {
-    const text = await res.text();
-    // console.log("error body:", text);
-    return null;
-  }
-  return res.json();
-}
-
-export default async function itemListing({ params }) {
+export default async function ListingPage({ params }) {
   const { itemId } = await params;
 
-  // const item = await getItem(itemId);
-  const item = MOCK_ITEMS.find((item) => item.id === itemId);
+  const supabase = await createSupabaseClient();
 
-  if (!item) {
+  // Fetch listing directly from Supabase DB on the server
+  const { data: item, error } = await supabase
+    .from("listings")
+    .select("*, seller:profiles!seller_id(username)")
+    .eq("id", itemId)
+    .single();
+
+  if (error || !item) {
     notFound();
   }
-  console.log("The fetched item:", item);
 
   return (
     <div>

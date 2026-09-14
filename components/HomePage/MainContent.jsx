@@ -1,4 +1,5 @@
 // SHOULD BE FETURES ITEMS
+import { getHomeListings } from "@/lib/actions/listings";
 import { ListingCard } from "./ListingCard";
 import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
@@ -93,17 +94,27 @@ const hotListings = [
   },
 ];
 
-const MarketplaceGrid = ({ hotListings }) => {
+const MarketplaceGrid = ({ listings }) => {
+  if (!listings || listings.length === 0) {
+    return (
+      <div className="py-12 text-center text-gray-500">
+        No active listings found right now.
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-      {hotListings.map((listing) => (
+      {listings.map((listing) => (
         <ListingCard key={listing.id} listing={listing} />
       ))}
     </div>
   );
 };
 
-export default function MainContent() {
+export default async function MainContent() {
+  const listings = await getHomeListings(10);
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       {/* Categories Section */}
@@ -143,7 +154,7 @@ export default function MainContent() {
           </a>
         </div>
 
-        <MarketplaceGrid hotListings={MOCK_ITEMS} />
+        <MarketplaceGrid listings={listings} />
       </section>
     </main>
   );

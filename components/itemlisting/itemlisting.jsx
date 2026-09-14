@@ -2,41 +2,48 @@
 
 import React, { useState } from "react";
 import { notFound } from "next/navigation";
-import { MOCK_ITEMS } from "@/lib/MOCK_ITEMS";
 
-export default function ItemListingPage({ item, itemId }) {
-  //   const itemId = React.use(params)?.itemId || "1";
-  console.log(1232131231, item);
-  console.log(1232131231, itemId);
-
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
+export default function ItemListingPage({ item }) {
   if (!item) {
     notFound();
   }
 
+  // Ensure images array is never null or empty
+  const images =
+    Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
+
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
   const nextImage = () => {
-    setActiveImageIndex((prev) => (prev + 1) % item.images.length);
+    if (images.length <= 1) return;
+    setActiveImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    setActiveImageIndex(
-      (prev) => (prev - 1 + item.images.length) % item.images.length,
-    );
+    if (images.length <= 1) return;
+    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
+
+  // Safe fallback date formatting
+  const formattedDate = item.created_at
+    ? new Date(item.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "";
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 pb-16">
-      {/* Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8">
         {/* TOP SECTION: Gallery & Right Information Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT: Image Gallery (7 Columns) */}
           <div className="lg:col-span-7 flex gap-4">
             {/* Thumbnails list */}
-            {item.images.length > 1 && (
+            {images.length > 1 && (
               <div className="flex flex-col gap-3 shrink-0">
-                {item.images.map((imgUrl, idx) => (
+                {images.map((imgUrl, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
@@ -58,20 +65,29 @@ export default function ItemListingPage({ item, itemId }) {
 
             {/* Main Featured Image Display */}
             <div className="relative flex-1 aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group">
-              <img
-                src={item.images[activeImageIndex]}
-                alt={item.title}
-                className="w-full h-full object-contain p-4"
-              />
+              {images.length > 0 ? (
+                <img
+                  src={images[activeImageIndex]}
+                  alt={item.title}
+                  className="w-full h-full object-contain p-4"
+                />
+              ) : (
+                <div className="text-gray-400 font-medium text-sm">
+                  No images available
+                </div>
+              )}
 
               {/* Photo Counter Badge */}
-              <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
-                {activeImageIndex + 1} / {item.images.length}
-              </div>
+              {images.length > 0 && (
+                <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+                  {activeImageIndex + 1} / {images.length}
+                </div>
+              )}
 
               {/* Action Buttons Top-Right */}
               <div className="absolute top-4 right-4 flex items-center gap-2">
                 <button
+                  type="button"
                   aria-label="Favorite item"
                   className="p-2 bg-white/90 backdrop-blur-md rounded-full shadow hover:scale-105 active:scale-95 transition-transform text-gray-700 hover:text-red-500"
                 >
@@ -91,46 +107,52 @@ export default function ItemListingPage({ item, itemId }) {
                 </button>
               </div>
 
-              {/* Previous / Next Arrows */}
-              <button
-                onClick={prevImage}
-                aria-label="Previous image"
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
+              {/* Navigation Arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    aria-label="Previous image"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2.5"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
 
-              <button
-                onClick={nextImage}
-                aria-label="Next image"
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2.5"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    aria-label="Next image"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2.5"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -138,36 +160,40 @@ export default function ItemListingPage({ item, itemId }) {
           <div className="lg:col-span-5 space-y-4">
             {/* Box 1: Date, Title, Location */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>{item.createdAt}</span>
-              </div>
+              {formattedDate && (
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>Posted on {formattedDate}</span>
+                </div>
+              )}
 
               <h1 className="text-xl font-bold text-gray-900 leading-snug">
                 {item.title}
               </h1>
 
-              <span className="flex items-center gap-1">
-                <svg
-                  className="w-3.5 h-3.5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                {item.location}
-              </span>
+              {item.location && (
+                <span className="flex items-center gap-1 text-sm text-gray-600">
+                  <svg
+                    className="w-4 h-4 text-gray-400 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  {item.location}
+                </span>
+              )}
             </div>
 
             {/* Box 2: Price & Condition */}
@@ -177,38 +203,50 @@ export default function ItemListingPage({ item, itemId }) {
                   Price
                 </p>
                 <p className="text-3xl font-extrabold text-gray-900 mt-0.5">
-                  ${item.price}
+                  €{Number(item.price).toFixed(2)}
                 </p>
               </div>
 
-              <div className="text-right">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
-                  Condition
-                </p>
-                <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200">
-                  {item.condition}
-                </span>
-              </div>
+              {item.condition && (
+                <div className="text-right">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
+                    Condition
+                  </p>
+                  <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200">
+                    {item.condition}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Box 3: User Profile & Message Button */}
+            {/* Box 3: Seller Details & Actions */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-5">
               <div className="flex items-center gap-4">
-                <img
-                  src={item.seller.avatar}
-                  alt={item.seller.username}
-                  className="w-14 h-14 rounded-full object-cover border border-gray-200"
-                />
+                <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg overflow-hidden border border-gray-200">
+                  {item.seller?.avatar ? (
+                    <img
+                      src={item.seller.avatar}
+                      alt={item.seller.username || "Seller"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>
+                      {(item.seller?.username || "S").charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1">
                   <h3 className="text-base font-bold text-gray-900">
-                    {item.seller.username}
+                    {item.seller?.username || "Verified Seller"}
                   </h3>
+                  <p className="text-xs text-gray-500">Marketplace Member</p>
                 </div>
               </div>
 
-              {/* MESSAGE BUTTON */}
-              {/* <div className="grid grid-cols-2 gap-3 pt-2"> */}
-              <button className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2">
+              <button
+                type="button"
+                className="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+              >
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -228,13 +266,13 @@ export default function ItemListingPage({ item, itemId }) {
           </div>
         </div>
 
-        {/* BOTTOM SECTION: Description of Listing */}
+        {/* BOTTOM SECTION: Description */}
         <section className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">
             Description
           </h2>
           <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
-            {item.description}
+            {item.description || "No description provided."}
           </div>
         </section>
       </main>
