@@ -34,7 +34,7 @@ export default function PriceRangeSlider({
           className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors cursor-pointer select-none"
         >
           <span>
-            Price: ${priceRange[0]} - ${priceRange[1]}
+            Price: €{priceRange[0]} - €{priceRange[1]}
           </span>
           <svg
             className="w-3.5 h-3.5 text-gray-400"
@@ -73,10 +73,10 @@ export default function PriceRangeSlider({
         {/* Formatted Dollar Value Display */}
         <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
           <span className="px-2.5 py-1 bg-gray-100 rounded-lg border border-gray-200/60">
-            Min: ${priceRange[0]}
+            Min: €{priceRange[0]}
           </span>
           <span className="px-2.5 py-1 bg-gray-100 rounded-lg border border-gray-200/60">
-            Max: ${priceRange[1]}
+            Max: €{priceRange[1]}
           </span>
         </div>
 

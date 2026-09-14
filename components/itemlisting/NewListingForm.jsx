@@ -15,30 +15,8 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Upload, X, Loader2, DollarSign, MapPin, Euro } from "lucide-react";
-
-// const CATEGORIES = [
-//   "electronics",
-//   "vehicles",
-//   "real-estate",
-//   "apparel-and-accessories",
-//   "entertainment",
-//   "hobbies",
-//   "industrial-equipment",
-//   "home-and-garden",
-// ];
-
-const CATEGORIES = [
-  { label: "Electronics", value: "electronics" },
-  { label: "Vehicles", value: "vehicles" },
-  { label: "Real Estate", value: "real-estate" },
-  { label: "Apparel & Accessories", value: "apparel-and-accessories" },
-  { label: "Entertainment", value: "entertainment" },
-  { label: "Hobbies", value: "hobbies" },
-  { label: "Industrial Equipment", value: "industrial-equipment" },
-  { label: "Home & Garden", value: "home-and-garden" },
-];
-
-const CONDITIONS = ["New", "Like New", "Good", "Ok", "Poor"];
+import { CATEGORIES } from "@/lib/constants/categories";
+import { CONDITIONS } from "@/lib/constants/conditions";
 
 const MAX_IMAGES = 3;
 const MAX_WORDS = 300;

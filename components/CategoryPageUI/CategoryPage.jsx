@@ -4,18 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import PriceRangeSlider from "./PriceRangeSlider";
-
-const CATEGORIES2 = [
-  { label: "Electronics", value: "electronics" },
-  { label: "Vehicles", value: "vehicles" },
-  { label: "Real Estate", value: "real-estate" },
-  { label: "Apparel & Accessories", value: "apparel-and-accessories" },
-  { label: "Entertainment", value: "entertainment" },
-  { label: "Hobbies", value: "hobbies" },
-  { label: "Industrial Equipment", value: "industrial-equipment" },
-  { label: "Home & Garden", value: "home-and-garden" },
-  { label: "Sell", value: "sell" },
-];
+import { CATEGORIES } from "@/lib/constants/categories";
 
 export default function CategoryPage({
   category,
@@ -32,7 +21,7 @@ export default function CategoryPage({
   const [viewMode, setViewMode] = useState("list");
 
   const categoryName =
-    CATEGORIES2.find((c) => c.value === category)?.label || "All Listings";
+    CATEGORIES.find((c) => c.value === category)?.label || "All Listings";
 
   const updateUrlParams = (updates, resetPage = true) => {
     const params = new URLSearchParams(searchParams.toString());

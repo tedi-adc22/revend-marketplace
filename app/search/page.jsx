@@ -3,10 +3,15 @@ import { createSupabaseClient } from "@/lib/supabase/server";
 
 const PAGE_SIZE = 12;
 
+// Replaces special chars so it doesn't break Postg
+function sanitizeSearchTerm(term) {
+  return term.replace(/[%,()]/g, "");
+}
+
 export default async function SearchPage({ searchParams }) {
   const sParams = await searchParams;
 
-  const searchQuery = sParams?.q?.trim() || "";
+  const searchQuery = sanitizeSearchTerm(sParams?.q?.trim() || "");
   const currentPage = Math.max(1, parseInt(sParams?.page || "1", 10));
   const minPrice = sParams.minPrice ? Number(sParams.minPrice) : null;
   const maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : null;
@@ -19,7 +24,6 @@ export default async function SearchPage({ searchParams }) {
 
   const supabase = await createSupabaseClient();
 
-  // If there's no search term, don't hit the DB at all — just show empty state
   if (!searchQuery) {
     return (
       <CategoryPage
@@ -34,8 +38,6 @@ export default async function SearchPage({ searchParams }) {
     );
   }
 
-  // Ceiling for the slider — highest price among listings matching this search,
-  // unaffected by whatever price filter the user has applied.
   const { data: maxPriceItem } = await supabase
     .from("listings")
     .select("price")
@@ -49,7 +51,6 @@ export default async function SearchPage({ searchParams }) {
     ? Math.ceil(Number(maxPriceItem.price))
     : 1000;
 
-  // Build the actual filtered/sorted/paginated query
   let query = supabase
     .from("listings")
     .select("*, seller:profiles(username)", { count: "exact" })

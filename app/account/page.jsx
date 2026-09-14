@@ -5,7 +5,11 @@
 //   isPremium: false,
 //   listingLimit: 5,
 // };
-import { getUser, getUserListings } from "@/lib/supabase/server";
+import {
+  createSupabaseClient,
+  getUser,
+  getUserListings,
+} from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AccountPageClient from "@/components/account/AccountPageClient";
 
@@ -16,7 +20,27 @@ export default async function AccountPage() {
     redirect("/signin");
   }
 
-  const listings = await getUserListings(user.id);
+  const supabase = await createSupabaseClient();
 
-  return <AccountPageClient user={user} listings={listings || []} />;
+  const [{ data: profile }, listings] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("is_premium, username")
+      .eq("id", user.id)
+      .single(),
+    getUserListings(user.id),
+  ]);
+
+  const isPremium = profile?.is_premium || false;
+  const username =
+    profile?.username || user.user_metadata?.userName || "no username";
+
+  return (
+    <AccountPageClient
+      user={user}
+      listings={listings || []}
+      isPremium={isPremium}
+      username={username}
+    />
+  );
 }

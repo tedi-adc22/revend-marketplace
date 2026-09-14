@@ -17,16 +17,19 @@ import {
 import { deleteListingAction } from "@/lib/actions/listings";
 import toast from "react-hot-toast";
 
-export default function AccountPageClient({ user, listings = [] }) {
+export default function AccountPageClient({
+  user,
+  listings = [],
+  isPremium,
+  username,
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [listingToDelete, setListingToDelete] = useState(null);
 
-  const username = user.user_metadata?.userName || "Unnamed user";
   const email = user.email;
-  const isPremium = user.user_metadata?.isPremium || false;
 
-  const listingLimit = isPremium ? 20 : 500;
+  const listingLimit = isPremium ? 500 : 5;
   const listingsUsed = listings.length;
 
   const isLimitReached = listingsUsed >= listingLimit;
