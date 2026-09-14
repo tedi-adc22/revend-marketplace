@@ -43,17 +43,3 @@ export default function CategoriesNavBar() {
     </nav>
   );
 }
-
-//old
-{
-  /* 
-                href={`#${category.toLowerCase()}`}
-                className={`hover:text-black transition-colors ${
-                  category === "Sell"
-                    ? "font-bold text-orange-600 hover:text-orange-700"
-                    : ""
-                }`}
-              >
-                {category}
-              </a> */
-}
