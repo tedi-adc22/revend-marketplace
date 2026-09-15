@@ -1,18 +1,24 @@
 import ItemListingPage from "@/components/itemlisting/ItemListing";
 import { notFound } from "next/navigation";
-import { createSupabaseClient } from "@/lib/supabase/server";
+import { getListingById } from "@/lib/actions/data";
+
+export async function generateMetadata({ params }) {
+  const { itemId } = await params;
+  const { data: listing } = await getListingById(itemId);
+
+  if (!listing) {
+    return { title: "Listing not found | Revend" };
+  }
+
+  return {
+    title: `${listing.title} - €${listing.price} | Revend`,
+    description: listing.description?.slice(0, 160),
+  };
+}
 
 export default async function ListingPage({ params }) {
   const { itemId } = await params;
-
-  const supabase = await createSupabaseClient();
-
-  // Fetch listing directly from Supabase DB on the server
-  const { data: item, error } = await supabase
-    .from("listings")
-    .select("*, seller:profiles!seller_id(username)")
-    .eq("id", itemId)
-    .single();
+  const { data: item, error } = await getListingById(itemId);
 
   if (error || !item) {
     notFound();

@@ -1,7 +1,5 @@
 import CategoryPage from "@/components/CategoryPageUI/CategoryPage";
-import { createSupabaseClient } from "@/lib/supabase/server";
-
-const PAGE_SIZE = 12;
+import { getFilteredListings } from "@/lib/actions/data";
 
 // Replaces special chars so it doesn't break Postg
 function sanitizeSearchTerm(term) {
@@ -10,19 +8,7 @@ function sanitizeSearchTerm(term) {
 
 export default async function SearchPage({ searchParams }) {
   const sParams = await searchParams;
-
   const searchQuery = sanitizeSearchTerm(sParams?.q?.trim() || "");
-  const currentPage = Math.max(1, parseInt(sParams?.page || "1", 10));
-  const minPrice = sParams.minPrice ? Number(sParams.minPrice) : null;
-  const maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : null;
-  const condition =
-    sParams.condition && sParams.condition !== "All" ? sParams.condition : null;
-  const sort = sParams.sort || "Newest";
-
-  const from = (currentPage - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
-
-  const supabase = await createSupabaseClient();
 
   if (!searchQuery) {
     return (
@@ -38,44 +24,21 @@ export default async function SearchPage({ searchParams }) {
     );
   }
 
-  const { data: maxPriceItem } = await supabase
-    .from("listings")
-    .select("price")
-    .eq("status", "active")
-    .or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
-    .order("price", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const searchFilter = `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`;
 
-  const maxDatabasePrice = maxPriceItem?.price
-    ? Math.ceil(Number(maxPriceItem.price))
-    : 1000;
+  const currentPage = Math.max(1, parseInt(sParams.page || "1", 10));
 
-  let query = supabase
-    .from("listings")
-    .select("*, seller:profiles(username)", { count: "exact" })
-    .eq("status", "active")
-    .or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+  const { listings, count, totalPages, maxDatabasePrice, error } =
+    await getFilteredListings({
+      baseFilterFn: (q) => q.eq("status", "active").or(searchFilter),
+      page: currentPage,
+      minPrice: sParams.minPrice ? Number(sParams.minPrice) : null,
+      maxPrice: sParams.maxPrice ? Number(sParams.maxPrice) : null,
+      condition: sParams.condition !== "All" ? sParams.condition : null,
+      sort: sParams.sort || "Newest",
+    });
 
-  if (minPrice !== null) query = query.gte("price", minPrice);
-  if (maxPrice !== null) query = query.lte("price", maxPrice);
-  if (condition) query = query.eq("condition", condition);
-
-  if (sort === "Price Low") {
-    query = query.order("price", { ascending: true });
-  } else if (sort === "Price High") {
-    query = query.order("price", { ascending: false });
-  } else {
-    query = query.order("created_at", { ascending: false });
-  }
-
-  const { data: listings, count, error } = await query.range(from, to);
-
-  if (error) {
-    console.error("Error fetching search results:", error.message);
-  }
-
-  const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+  if (error) console.error("Error fetching search results:", error.message);
 
   return (
     <CategoryPage

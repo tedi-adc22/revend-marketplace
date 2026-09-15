@@ -1,71 +1,42 @@
 import CategoryPage from "@/components/CategoryPageUI/CategoryPage";
-import { createSupabaseClient } from "@/lib/supabase/server";
+import { getFilteredListings } from "@/lib/actions/data";
+import { CATEGORIES } from "@/lib/constants/categories";
 
-const PAGE_SIZE = 12;
+export async function generateMetadata({ params }) {
+  const { category } = await params;
+  const label = CATEGORIES.find((c) => c.value === category)?.label || category;
+
+  return {
+    title: `${label} | Revend`,
+    description: `Browse ${label} listings for sale on Revend.`,
+  };
+}
 
 export default async function Category({ params, searchParams }) {
   const { category } = await params;
   const sParams = await searchParams;
 
   const currentPage = Math.max(1, parseInt(sParams.page || "1", 10));
-  const minPrice = sParams.minPrice ? Number(sParams.minPrice) : null;
-  const maxPrice = sParams.maxPrice ? Number(sParams.maxPrice) : null;
-  const condition =
-    sParams.condition && sParams.condition !== "All" ? sParams.condition : null;
-  const sort = sParams.sort || "Newest";
 
-  const from = (currentPage - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
+  const { listings, count, totalPages, maxDatabasePrice, error } =
+    await getFilteredListings({
+      baseFilterFn: (q) => q.eq("category", category),
+      page: currentPage,
+      minPrice: sParams.minPrice ? Number(sParams.minPrice) : null,
+      maxPrice: sParams.maxPrice ? Number(sParams.maxPrice) : null,
+      condition: sParams.condition !== "All" ? sParams.condition : null,
+      sort: sParams.sort || "Newest",
+    });
 
-  const supabase = await createSupabaseClient();
-
-  // Ceiling for the slider — the highest price among ALL listings in this
-  // category, unaffected by whatever the user currently has filtered to.
-  const { data: maxPriceItem } = await supabase
-    .from("listings")
-    .select("price")
-    .eq("category", category)
-    .order("price", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const maxDatabasePrice = maxPriceItem?.price
-    ? Math.ceil(Number(maxPriceItem.price))
-    : 1000;
-
-  // Build the actual filtered/paginated query
-  let query = supabase
-    .from("listings")
-    .select("*, seller:profiles(username)", { count: "exact" })
-    .eq("category", category);
-
-  if (minPrice !== null) query = query.gte("price", minPrice);
-  if (maxPrice !== null) query = query.lte("price", maxPrice);
-  if (condition) query = query.eq("condition", condition);
-
-  if (sort === "Price Low") {
-    query = query.order("price", { ascending: true });
-  } else if (sort === "Price High") {
-    query = query.order("price", { ascending: false });
-  } else {
-    query = query.order("created_at", { ascending: false });
-  }
-
-  const { data: listings, count, error } = await query.range(from, to);
-
-  if (error) {
-    console.error("Error fetching category listings:", error.message);
-  }
-
-  const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+  if (error) console.error("Error fetching category listings:", error.message);
 
   return (
     <CategoryPage
       category={category}
-      initialListings={listings || []}
+      initialListings={listings}
       currentPage={currentPage}
       totalPages={totalPages}
-      totalResults={count || 0}
+      totalResults={count}
       maxPrice={maxDatabasePrice}
     />
   );
