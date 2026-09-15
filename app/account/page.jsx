@@ -1,10 +1,3 @@
-// const MOCK_USER = {
-//   username: "alex_r",
-//   email: "alex.r@example.com",
-//   avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
-//   isPremium: false,
-//   listingLimit: 5,
-// };
 import {
   createSupabaseClient,
   getUser,
@@ -12,6 +5,11 @@ import {
 } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AccountPageClient from "@/components/account/AccountPageClient";
+
+export const metadata = {
+  title: "My Account | Revend",
+  description: "Manage your Revend profile, listings, and plan.",
+};
 
 export default async function AccountPage() {
   const user = await getUser();

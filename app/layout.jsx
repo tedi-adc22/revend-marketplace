@@ -2,7 +2,9 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import TopHeader from "@/components/HomePage/TopHeader";
 import { Toaster } from "react-hot-toast";
-import { getUser } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import TopHeaderServer from "@/components/HomePage/TopHeaderServer";
+import TopHeaderFallback from "@/components/HomePage/TopHeaderFallback";
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -24,12 +26,12 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const user = await getUser();
-
   return (
     <html lang="en" className={`${inter.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <TopHeader user={user} />
+        <Suspense fallback={<TopHeaderFallback />}>
+          <TopHeaderServer />
+        </Suspense>
         <main>{children}</main>
         <Toaster toastOptions={{ style: { textAlign: "center" } }} />
       </body>

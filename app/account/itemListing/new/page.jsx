@@ -2,6 +2,11 @@ import { getUser } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import NewListingForm from "@/components/itemlisting/NewListingForm";
 
+export const metadata = {
+  title: "Create a Listing | Revend",
+  description: "Post a new item for sale on Revend.",
+};
+
 export default async function NewListingPage() {
   const user = await getUser();
 
