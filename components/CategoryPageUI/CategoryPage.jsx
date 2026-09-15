@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import PriceRangeSlider from "./PriceRangeSlider";
 import { CATEGORIES } from "@/lib/constants/categories";
+import { getVisiblePages } from "@/lib/utils";
 
 export default function CategoryPage({
   category,
@@ -326,8 +327,15 @@ export default function CategoryPage({
               </button>
 
               <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
+                {getVisiblePages(currentPage, totalPages).map((p, idx) =>
+                  p === "..." ? (
+                    <span
+                      key={`dots-${idx}`}
+                      className="px-2 text-gray-400 text-xs"
+                    >
+                      …
+                    </span>
+                  ) : (
                     <button
                       key={p}
                       onClick={() =>

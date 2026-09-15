@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import {
   Popover,
@@ -14,20 +14,48 @@ export default function PriceRangeSlider({
   max = 1000,
   step = 10,
   onPriceChange,
+  delay = 500,
 }) {
   const [priceRange, setPriceRange] = useState([min, max]);
+  const debounceTimer = useRef(null);
 
   const handleValueChange = (newValues) => {
-    setPriceRange(newValues);
+    setPriceRange(newValues); // updates instantly — slider stays responsive while dragging
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      if (onPriceChange) {
+        onPriceChange(newValues);
+      }
+    }, delay);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+
+  const handleReset = () => {
+    const resetValues = [min, max];
+    setPriceRange(resetValues);
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
     if (onPriceChange) {
-      onPriceChange(newValues);
+      onPriceChange(resetValues); // reset applies immediately, no need to wait
     }
   };
 
   return (
     <Popover>
       <PopoverTrigger>
-        {/* Changed from <button> to <div> so Radix converts it to the single trigger element without nesting buttons */}
         <div
           role="button"
           tabIndex={0}
@@ -60,7 +88,6 @@ export default function PriceRangeSlider({
           </p>
         </div>
 
-        {/* Dual Handle Slider */}
         <Slider
           value={priceRange}
           min={min}
@@ -70,7 +97,6 @@ export default function PriceRangeSlider({
           className="my-4"
         />
 
-        {/* Formatted Dollar Value Display */}
         <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
           <span className="px-2.5 py-1 bg-gray-100 rounded-lg border border-gray-200/60">
             Min: €{priceRange[0]}
@@ -85,7 +111,7 @@ export default function PriceRangeSlider({
             variant="ghost"
             size="sm"
             className="text-xs"
-            onClick={() => handleValueChange([min, max])}
+            onClick={handleReset}
           >
             Reset
           </Button>

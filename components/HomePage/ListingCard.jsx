@@ -3,14 +3,19 @@
 import Link from "next/link";
 
 export const ListingCard = ({ listing }) => {
+  const imageSrc =
+    Array.isArray(listing.images) && listing.images.length > 0
+      ? listing.images[0]
+      : null;
+
   return (
     <Link href={`/item/${listing.id}`} className="flex flex-col">
       <div className="group cursor-pointer flex flex-col">
         {/* Image Container */}
         <div className="relative w-full aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center p-4">
-          {listing.images[0] ? (
+          {imageSrc ? (
             <img
-              src={listing.images[0]}
+              src={imageSrc}
               alt={listing.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -26,8 +31,7 @@ export const ListingCard = ({ listing }) => {
             type="button"
             aria-label="Add to favorites"
             onClick={(e) => {
-              e.stopPropagation(); // Prevents clicking the heart from opening the card page
-              // Handle favorite logic here
+              e.stopPropagation();
             }}
             className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform"
           >
@@ -50,18 +54,15 @@ export const ListingCard = ({ listing }) => {
         {/* Listing Details */}
         <div className="mt-3 space-y-1.5 flex-1 flex flex-col justify-between">
           <div>
-            {/* Title */}
             <h3 className="font-medium text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
               {listing.title}
             </h3>
 
-            {/* Price */}
             <p className="text-lg font-bold text-gray-900 mt-1">
               €{listing.price}
             </p>
           </div>
 
-          {/* Location (optional field) */}
           {listing.location && (
             <div className="flex items-center gap-1 text-xs text-gray-500 pt-1">
               <svg
