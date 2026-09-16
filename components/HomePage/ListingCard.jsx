@@ -1,6 +1,6 @@
-// ListingCard.jsx
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export const ListingCard = ({ listing }) => {
   const imageSrc =
@@ -9,15 +9,17 @@ export const ListingCard = ({ listing }) => {
       : null;
 
   return (
-    <Link href={`/item/${listing.id}`} className="flex flex-col">
-      <div className="group cursor-pointer flex flex-col">
+    <Link href={`/item/${listing.id}`} className="flex flex-col group">
+      <div className="flex flex-col">
         {/* Image Container */}
-        <div className="relative w-full aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center p-4">
+        <div className="relative w-full aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center">
           {imageSrc ? (
-            <img
+            <Image
               src={imageSrc}
               alt={listing.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             /* Fallback placeholder if no image exists */
@@ -31,9 +33,10 @@ export const ListingCard = ({ listing }) => {
             type="button"
             aria-label="Add to favorites"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
             }}
-            className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform"
+            className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform z-10"
           >
             <svg
               className="w-5 h-5 text-gray-800"
@@ -59,7 +62,7 @@ export const ListingCard = ({ listing }) => {
             </h3>
 
             <p className="text-lg font-bold text-gray-900 mt-1">
-              €{listing.price}
+              €{Number(listing.price || 0).toFixed(2)}
             </p>
           </div>
 

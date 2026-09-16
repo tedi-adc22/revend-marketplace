@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export default function ItemListingPage({ item }) {
@@ -8,7 +9,6 @@ export default function ItemListingPage({ item }) {
     notFound();
   }
 
-  // Ensure images array is never null or empty
   const images =
     Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
 
@@ -24,7 +24,6 @@ export default function ItemListingPage({ item }) {
     setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Safe fallback date formatting
   const formattedDate = item.created_at
     ? new Date(item.created_at).toLocaleDateString("en-US", {
         month: "short",
@@ -47,16 +46,18 @@ export default function ItemListingPage({ item }) {
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`w-16 h-16 rounded-xl border-2 overflow-hidden bg-gray-100 transition-all ${
+                    className={`relative w-16 h-16 rounded-xl border-2 overflow-hidden bg-gray-100 transition-all ${
                       activeImageIndex === idx
-                        ? "border-black ring-2 ring-black/5"
+                        ? "border-black ring-2 ring-black/5 opacity-100"
                         : "border-transparent hover:border-gray-300 opacity-70 hover:opacity-100"
                     }`}
                   >
-                    <img
+                    <Image
                       src={imgUrl}
                       alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -66,10 +67,13 @@ export default function ItemListingPage({ item }) {
             {/* Main Featured Image Display */}
             <div className="relative flex-1 aspect-[4/3] rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group">
               {images.length > 0 ? (
-                <img
+                <Image
                   src={images[activeImageIndex]}
                   alt={item.title}
-                  className="w-full h-full object-contain p-4"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-contain"
                 />
               ) : (
                 <div className="text-gray-400 font-medium text-sm">
@@ -79,13 +83,13 @@ export default function ItemListingPage({ item }) {
 
               {/* Photo Counter Badge */}
               {images.length > 0 && (
-                <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+                <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none z-10">
                   {activeImageIndex + 1} / {images.length}
                 </div>
               )}
 
-              {/* Action Buttons Top-Right */}
-              <div className="absolute top-4 right-4 flex items-center gap-2">
+              {/* Favorite Button Top-Right */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
                 <button
                   type="button"
                   aria-label="Favorite item"
@@ -114,7 +118,7 @@ export default function ItemListingPage({ item }) {
                     type="button"
                     onClick={prevImage}
                     aria-label="Previous image"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-10"
                   >
                     <svg
                       className="w-5 h-5"
@@ -135,7 +139,7 @@ export default function ItemListingPage({ item }) {
                     type="button"
                     onClick={nextImage}
                     aria-label="Next image"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 backdrop-blur-md shadow-md text-gray-800 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-10"
                   >
                     <svg
                       className="w-5 h-5"
@@ -158,7 +162,6 @@ export default function ItemListingPage({ item }) {
 
           {/* RIGHT: Listing Info Side Cards (5 Columns) */}
           <div className="lg:col-span-5 space-y-4">
-            {/* Box 1: Date, Title, Location */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
               {formattedDate && (
                 <div className="flex items-center justify-between text-xs text-gray-500">
@@ -195,7 +198,6 @@ export default function ItemListingPage({ item }) {
                 </span>
               )}
             </div>
-
             {/* Box 2: Price & Condition */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm flex items-center justify-between">
               <div>
@@ -203,7 +205,7 @@ export default function ItemListingPage({ item }) {
                   Price
                 </p>
                 <p className="text-3xl font-extrabold text-gray-900 mt-0.5">
-                  €{Number(item.price).toFixed(2)}
+                  €{Number(item.price || 0).toFixed(2)}
                 </p>
               </div>
 
@@ -218,16 +220,17 @@ export default function ItemListingPage({ item }) {
                 </div>
               )}
             </div>
-
             {/* Box 3: Seller Details & Actions */}
             <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-5">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg overflow-hidden border border-gray-200">
+                <div className="relative w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-bold text-lg overflow-hidden border border-gray-200 shrink-0">
                   {item.seller?.avatar ? (
-                    <img
+                    <Image
                       src={item.seller.avatar}
                       alt={item.seller.username || "Seller"}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="56px"
+                      className="object-cover"
                     />
                   ) : (
                     <span>
@@ -265,7 +268,6 @@ export default function ItemListingPage({ item }) {
             </div>
           </div>
         </div>
-
         {/* BOTTOM SECTION: Description */}
         <section className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">
