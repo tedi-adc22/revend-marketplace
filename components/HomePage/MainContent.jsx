@@ -60,7 +60,7 @@ export default async function MainContent() {
       <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-gray-900">
-            Hot items right now / Most viewed this week
+            Most viewed items this week
           </h2>
           <a
             href="/category/all"
