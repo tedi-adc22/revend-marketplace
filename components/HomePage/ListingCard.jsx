@@ -34,7 +34,7 @@ export const ListingCard = ({ listing }) => {
             aria-label="Add to favorites"
             onClick={(e) => {
               e.preventDefault();
-              e.stopPropagation();
+              // e.stopPropagation();
             }}
             className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform z-10"
           >
