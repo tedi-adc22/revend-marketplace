@@ -1,4 +1,3 @@
-// SHOULD BE FETURES ITEMS
 import { getHomeListings } from "@/lib/actions/data";
 import { ListingCard } from "./ListingCard";
 
@@ -21,8 +20,8 @@ const MarketplaceGrid = ({ listings }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-      {listings.map((listing) => (
-        <ListingCard key={listing.id} listing={listing} />
+      {listings.map((listing, index) => (
+        <ListingCard key={listing.id} listing={listing} index={index} />
       ))}
     </div>
   );
@@ -34,7 +33,7 @@ export default async function MainContent() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       {/* Categories Section */}
-      <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+      {/* <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <h2 className="text-2xl font-semibold mb-6">Categories</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
           {featuredCategories.map((item, index) => (
@@ -54,7 +53,7 @@ export default async function MainContent() {
             </a>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Hot Listings Section */}
       <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">

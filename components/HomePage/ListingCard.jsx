@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export const ListingCard = ({ listing }) => {
+export const ListingCard = ({ listing, index = 0 }) => {
   const imageSrc =
     Array.isArray(listing.images) && listing.images.length > 0
       ? listing.images[0]
@@ -19,10 +19,10 @@ export const ListingCard = ({ listing }) => {
               alt={listing.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
+              priority={index < 4} // Eager load top 4 items for LCP performance
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
-            /* Fallback placeholder if no image exists */
             <div className="w-full h-full bg-gray-200 rounded-xl flex items-center justify-center text-gray-400 font-medium text-sm">
               No Image
             </div>
@@ -34,7 +34,6 @@ export const ListingCard = ({ listing }) => {
             aria-label="Add to favorites"
             onClick={(e) => {
               e.preventDefault();
-              // e.stopPropagation();
             }}
             className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform z-10"
           >

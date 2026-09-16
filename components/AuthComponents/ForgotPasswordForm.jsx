@@ -82,7 +82,7 @@ export default function ForgotPasswordForm() {
 
         <CardFooter className="flex justify-center border-t border-gray-100 pt-4 pb-6 text-xs text-gray-500">
           <Link
-            href="/login"
+            href="/signin"
             className="font-bold text-blue-600 hover:underline"
           >
             Back to Sign In

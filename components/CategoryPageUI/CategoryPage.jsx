@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import PriceRangeSlider from "./PriceRangeSlider";
 import { CATEGORIES } from "@/lib/constants/categories";
@@ -191,7 +192,7 @@ export default function CategoryPage({
                 : "space-y-4"
             }
           >
-            {initialListings.map((item) => {
+            {initialListings.map((item, index) => {
               const imageSrc =
                 Array.isArray(item.images) && item.images.length > 0
                   ? item.images[0]
@@ -209,10 +210,13 @@ export default function CategoryPage({
                     <div className="flex flex-col sm:flex-row items-stretch">
                       <div className="sm:w-1/2 p-4 flex gap-4 border-b sm:border-b-0 sm:border-r border-gray-100">
                         <div className="relative w-48 h-36 shrink-0 rounded-md bg-gray-100 overflow-hidden border border-gray-100">
-                          <img
+                          <Image
                             src={imageSrc}
                             alt={item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            fill
+                            sizes="192px"
+                            priority={index < 4}
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
 
@@ -314,10 +318,13 @@ export default function CategoryPage({
                   ) : (
                     <div className="p-4 space-y-3">
                       <div className="relative aspect-[4/3] rounded-xl bg-gray-100 overflow-hidden">
-                        <img
+                        <Image
                           src={imageSrc}
                           alt={item.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                          priority={index < 4}
+                          className="object-cover"
                         />
                       </div>
                       <div>

@@ -26,7 +26,7 @@ export default function ResetPasswordForm() {
         toast.error(errorMessage);
       } else {
         toast.success("Password updated successfully!");
-        router.push("/login");
+        router.push("/signin");
       }
     });
   };
