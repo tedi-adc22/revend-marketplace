@@ -14,36 +14,46 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Upload, X, Loader2, DollarSign, MapPin, Euro } from "lucide-react";
+import { Upload, X, Loader2, MapPin, Euro } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { CONDITIONS } from "@/lib/constants/conditions";
-
-const MAX_IMAGES = 3;
-const MAX_WORDS = 300;
-const MAX_PRICE = 5000000;
+import {
+  MAX_IMAGES,
+  MAX_PRICE,
+  MAX_IMAGE_SIZE_BYTES,
+  MAX_CHARACTERS_DESCRIPTION,
+  MAX_TITLE_LENGTH,
+  MAX_LOCATION_LENGTH,
+} from "@/lib/constants/limits";
 
 export default function NewListingForm() {
   const [isPending, startTransition] = useTransition();
   const [selectedImages, setSelectedImages] = useState([]);
   const [description, setDescription] = useState("");
+
   const router = useRouter();
 
-  // Calculate live word count
-  const wordCount = description.length;
-  const isWordLimitExceeded = wordCount > MAX_WORDS;
-
+  // Calculate live character count
+  const characterCount = description.length;
+  const isWordLimitExceeded = characterCount > MAX_CHARACTERS_DESCRIPTION;
   // Handle Description Change with Word Limit Check
   const handleDescriptionChange = (e) => {
-    const text = e.target.value;
-    const words = text.trim() === "" ? [] : text.trim().split(/\s+/);
+    const characters = e.target.value;
+    // const characters = text.trim() === "" ? [] : text.trim().split(/\s+/);
 
     // Allow typing if under the limit, OR if deleting characters
-    if (words.length <= MAX_WORDS || text.length < description.length) {
-      setDescription(text);
+    if (
+      characters.length <= MAX_CHARACTERS_DESCRIPTION ||
+      characters.length < description.length
+    ) {
+      setDescription(characters);
     } else {
-      toast.error(`Maximum limit of ${MAX_WORDS} words reached!`, {
-        id: "word-limit",
-      });
+      toast.error(
+        `Maximum limit of ${MAX_CHARACTERS_DESCRIPTION} characters reached!`,
+        {
+          id: "word-limit",
+        },
+      );
     }
   };
 
@@ -54,6 +64,17 @@ export default function NewListingForm() {
 
     if (selectedImages.length + files.length > MAX_IMAGES) {
       toast.error(`You can only upload up to ${MAX_IMAGES} images.`);
+      return;
+    }
+
+    // Client side check for oversized files
+    const oversizedFile = files.find(
+      (file) => file.size > MAX_IMAGE_SIZE_BYTES,
+    );
+    if (oversizedFile) {
+      toast.error(
+        `"${oversizedFile.name}" is too large. Max size is ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)}MB per image.`,
+      );
       return;
     }
 
@@ -77,25 +98,26 @@ export default function NewListingForm() {
     e.preventDefault();
 
     if (isWordLimitExceeded) {
-      toast.error("Please reduce your description to 250 words or less.");
+      toast.error("Please reduce your description to 300 characters or less.");
       return;
     }
 
-    console.log("----------------- FORM DATA ---------EEE1", e);
-
     const formData = new FormData(e.currentTarget);
-    console.log("----------------- FORM DATA ---------NEW FORM DATA", formData);
 
     formData.delete("images");
     selectedImages.forEach((imgObj) => {
       formData.append("images", imgObj.file);
     });
 
-    console.log(
-      "----------------- FORM DATA ---------IMAGES APPEND FORM DATA",
-      formData,
-    );
-
+    // Client-side guard against large payload submissions
+    const totalSize = formData.reduce((acc, file) => acc + file.size, 0);
+    if (totalSize > 10 * 1024 * 1024) {
+      // 33 MB total
+      toast.error(
+        "Total image upload size exceeds 10MB. Please select smaller files.",
+      );
+      return;
+    }
     startTransition(async () => {
       const { errorMessage } = await createListingAction(formData);
 
@@ -123,7 +145,13 @@ export default function NewListingForm() {
           {/* Title Input */}
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" name="title" required disabled={isPending} />
+            <Input
+              id="title"
+              name="title"
+              maxLength={MAX_TITLE_LENGTH}
+              required
+              disabled={isPending}
+            />
           </div>
 
           {/* Description */}
@@ -139,17 +167,17 @@ export default function NewListingForm() {
                 disabled={isPending}
                 rows={4}
                 placeholder="Describe the condition, specs, reason for selling..."
-                className="w-full rounded-md border border-input bg-background px-3 py-2 pb-7 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y break-words"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 pb-7 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y break-characters"
               />
               {/* Bottom Right Live Counter */}
               <div
                 className={`absolute bottom-2 right-3 text-xs font-medium pointer-events-none transition-colors ${
-                  wordCount >= MAX_WORDS
+                  characterCount >= MAX_CHARACTERS_DESCRIPTION
                     ? "text-red-500 font-bold"
                     : "text-muted-foreground"
                 }`}
               >
-                {wordCount} / {MAX_WORDS} Characters
+                {characterCount} / {MAX_CHARACTERS_DESCRIPTION} Characters
               </div>
             </div>
           </div>
@@ -192,6 +220,7 @@ export default function NewListingForm() {
                   id="location"
                   name="location"
                   placeholder="e.g. Sofia, BG"
+                  maxLength={MAX_LOCATION_LENGTH}
                   className="pl-9"
                   required
                   disabled={isPending}

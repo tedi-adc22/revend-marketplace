@@ -1,24 +1,17 @@
 import EditListingForm from "@/components/itemlisting/EditListingForm";
-import { getUser, createSupabaseClient } from "@/lib/supabase/server";
+import { getListingById } from "@/lib/actions/data";
+import { getUser } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 
 export default async function EditListingPage({ params }) {
   const { id } = await params;
-  console.log(id);
+
   const user = await getUser();
 
   if (!user) {
     redirect("/signin");
   }
-
-  const supabase = await createSupabaseClient();
-
-  // Fetch listing by ID
-  const { data: listing, error } = await supabase
-    .from("listings")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const { data: listing, error } = await getListingById(id);
 
   if (error || !listing || listing.seller_id !== user.id) {
     notFound();

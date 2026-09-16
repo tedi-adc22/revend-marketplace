@@ -17,10 +17,14 @@ import {
 import { Upload, X, Loader2, MapPin, Euro } from "lucide-react";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { CONDITIONS } from "@/lib/constants/conditions";
-
-const MAX_IMAGES = 3;
-const MAX_WORDS = 300;
-const MAX_PRICE = 5000000;
+import {
+  MAX_IMAGES,
+  MAX_PRICE,
+  MAX_IMAGE_SIZE_BYTES,
+  MAX_CHARACTERS_DESCRIPTION,
+  MAX_TITLE_LENGTH,
+  MAX_LOCATION_LENGTH,
+} from "@/lib/constants/limits";
 
 export default function EditListingForm({ initialListing }) {
   const [isPending, startTransition] = useTransition();
@@ -30,21 +34,28 @@ export default function EditListingForm({ initialListing }) {
   const [existingImages, setExistingImages] = useState(
     initialListing.images || [],
   );
+
   const [newImages, setNewImages] = useState([]);
   const router = useRouter();
 
   const totalImageCount = existingImages.length + newImages.length;
-  const wordCount = description.length;
+  const characterCount = description.length;
 
-  // Handle Description Change
+  // Handle text Change
   const handleDescriptionChange = (e) => {
     const text = e.target.value;
-    if (text.length <= MAX_WORDS || text.length < description.length) {
+    if (
+      text.length <= MAX_CHARACTERS_DESCRIPTION ||
+      text.length < description.length
+    ) {
       setDescription(text);
     } else {
-      toast.error(`Maximum limit of ${MAX_WORDS} characters reached!`, {
-        id: "word-limit",
-      });
+      toast.error(
+        `Maximum limit of ${MAX_CHARACTERS_DESCRIPTION} characters reached!`,
+        {
+          id: "word-limit",
+        },
+      );
     }
   };
 
@@ -55,6 +66,16 @@ export default function EditListingForm({ initialListing }) {
 
     if (totalImageCount + files.length > MAX_IMAGES) {
       toast.error(`You can only upload up to ${MAX_IMAGES} images.`);
+      return;
+    }
+
+    const oversizedFile = files.find(
+      (file) => file.size > MAX_IMAGE_SIZE_BYTES,
+    );
+    if (oversizedFile) {
+      toast.error(
+        `"${oversizedFile.name}" is too large. Max size is ${MAX_IMAGE_SIZE_BYTES / (1024 * 1024)}MB per image.`,
+      );
       return;
     }
 
@@ -89,8 +110,6 @@ export default function EditListingForm({ initialListing }) {
     }
 
     const formData = new FormData(e.currentTarget);
-
-    console.log("FORM DATA---------", formData);
     // Pass existing image URLs retained by user
     formData.append("existingImages", JSON.stringify(existingImages));
 
@@ -132,6 +151,7 @@ export default function EditListingForm({ initialListing }) {
               id="title"
               name="title"
               defaultValue={initialListing.title}
+              maxLength={MAX_TITLE_LENGTH}
               required
               disabled={isPending}
             />
@@ -153,12 +173,12 @@ export default function EditListingForm({ initialListing }) {
               />
               <div
                 className={`absolute bottom-2 right-3 text-xs font-medium pointer-events-none transition-colors ${
-                  wordCount >= MAX_WORDS
+                  characterCount >= MAX_CHARACTERS_DESCRIPTION
                     ? "text-red-500 font-bold"
                     : "text-muted-foreground"
                 }`}
               >
-                {wordCount} / {MAX_WORDS} Characters
+                {characterCount} / {MAX_CHARACTERS_DESCRIPTION} Characters
               </div>
             </div>
           </div>
@@ -200,6 +220,7 @@ export default function EditListingForm({ initialListing }) {
                 <Input
                   id="location"
                   name="location"
+                  maxLength={MAX_LOCATION_LENGTH}
                   defaultValue={initialListing.location}
                   className="pl-9"
                   required
