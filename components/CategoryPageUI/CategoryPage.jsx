@@ -21,6 +21,7 @@ export default function CategoryPage({
   totalPages = 1,
   totalResults = 0,
   maxPrice,
+  searchQuery,
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +30,9 @@ export default function CategoryPage({
   const [viewMode, setViewMode] = useState("list");
 
   const categoryName =
-    CATEGORIES.find((c) => c.value === category)?.label || "All Listings";
+    CATEGORIES.find((c) => c.value === category)?.label ||
+    searchQuery ||
+    "All Listings";
 
   const updateUrlParams = (updates, resetPage = true) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -75,6 +78,12 @@ export default function CategoryPage({
             key={category}
             min={0}
             max={maxPrice}
+            initialMin={
+              searchParams.minPrice ? Number(searchParams.minPrice) : null
+            }
+            initialMax={
+              searchParams.maxPrice ? Number(searchParams.maxPrice) : null
+            }
             step={10}
             onPriceChange={(range) => {
               updateUrlParams({ minPrice: range[0], maxPrice: range[1] });

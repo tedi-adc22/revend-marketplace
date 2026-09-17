@@ -12,12 +12,25 @@ import { Button } from "@/components/ui/button";
 export default function PriceRangeSlider({
   min = 0,
   max = 1000,
+  initialMin,
+  initialMax,
   step = 10,
   onPriceChange,
   delay = 500,
 }) {
-  const [priceRange, setPriceRange] = useState([min, max]);
+  // Fallback to min/max if initial searchParams aren't set
+  const startMin =
+    initialMin !== undefined && initialMin !== null ? initialMin : min;
+  const startMax =
+    initialMax !== undefined && initialMax !== null ? initialMax : max;
+
+  const [priceRange, setPriceRange] = useState([startMin, startMax]);
   const debounceTimer = useRef(null);
+
+  // Keep local state in sync when URL searchParams update from navigation
+  useEffect(() => {
+    setPriceRange([startMin, startMax]);
+  }, [startMin, startMax]);
 
   const handleValueChange = (newValues) => {
     setPriceRange(newValues); // updates instantly — slider stays responsive while dragging
@@ -49,7 +62,7 @@ export default function PriceRangeSlider({
       clearTimeout(debounceTimer.current);
     }
     if (onPriceChange) {
-      onPriceChange(resetValues); // reset applies immediately, no need to wait
+      onPriceChange(resetValues); // reset applies immediately
     }
   };
 
