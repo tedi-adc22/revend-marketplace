@@ -2,8 +2,9 @@
 const nextConfig = {
   /* config options here */
   experimental: {
+    middlewareClientMaxBodySize: "30mb", // <-- Moved inside experimental
     serverActions: {
-      bodySizeLimit: "28mb",
+      bodySizeLimit: "30mb",
     },
   },
   images: {
