@@ -53,9 +53,9 @@ export default function SignInForm() {
           </CardDescription>
         </CardHeader>
 
-        {/* GOOGLE LOGIN BUTTON OPTION */}
+        {/* GOOGLE LOGIN BUTTON OPTION NOT ADDED YET */}
         <CardContent className="space-y-4">
-          <div className="px-28">
+          {/* <div className="px-28">
             <Button
               variant="outline"
               type="button"
@@ -81,7 +81,7 @@ export default function SignInForm() {
               </svg>
               Google
             </Button>
-          </div>
+          </div> */}
 
           {/* Divider */}
           <div className="relative my-2">

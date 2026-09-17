@@ -10,18 +10,18 @@ export default function TopHeader({ user }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const handleClickSignOutButton = () => {
-    startTransition(async () => {
-      const { errorMessage } = await signOutAction();
+  // const handleClickSignOutButton = () => {
+  //   startTransition(async () => {
+  //     const { errorMessage } = await signOutAction();
 
-      if (errorMessage) {
-        toast.error(errorMessage);
-      } else {
-        router.push("/");
-        toast.success("Successfully signed out");
-      }
-    });
-  };
+  //     if (errorMessage) {
+  //       toast.error(errorMessage);
+  //     } else {
+  //       router.push("/");
+  //       toast.success("Successfully signed out");
+  //     }
+  //   });
+  // };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -83,14 +83,6 @@ export default function TopHeader({ user }) {
               >
                 My Account
               </Link>
-
-              <button
-                onClick={handleClickSignOutButton}
-                className="hover:text-blue-600 transition-colors"
-                disabled={isPending}
-              >
-                {isPending ? <Loader2 className="animate-spin" /> : "Sign Out"}
-              </button>
             </>
           ) : (
             <>

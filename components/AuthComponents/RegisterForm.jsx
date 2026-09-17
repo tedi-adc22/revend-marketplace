@@ -56,8 +56,8 @@ export default function RegisterForm() {
           </CardDescription>
         </CardHeader>
 
-        {/* GOOGLE LOGIN BUTTON OPTION */}
-        <div className="px-28">
+        {/* GOOGLE LOGIN BUTTON OPTION NOT ADDED YET */}
+        {/* <div className="px-28">
           <Button
             variant="outline"
             type="button"
@@ -83,7 +83,7 @@ export default function RegisterForm() {
             </svg>
             Google
           </Button>
-        </div>
+        </div> */}
 
         {/* Divider */}
         <div className="relative my-2">
