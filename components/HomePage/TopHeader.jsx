@@ -1,7 +1,5 @@
 "use client";
 import Link from "next/link";
-import { signOutAction } from "@/lib/actions/users";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
