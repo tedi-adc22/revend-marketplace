@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link, Plus } from "lucide-react";
+import { Link, Plus, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import {
@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { deleteListingAction } from "@/lib/actions/listings";
+import { signOutAction } from "@/lib/actions/users";
 import toast from "react-hot-toast";
 
 export default function AccountPageClient({
@@ -49,16 +50,37 @@ export default function AccountPageClient({
     });
   };
 
+  const handleClickSignOutButton = () => {
+    startTransition(async () => {
+      const { errorMessage } = await signOutAction();
+
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        router.push("/");
+        toast.success("Successfully signed out");
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
         <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
+        <button
+          onClick={handleClickSignOutButton}
+          className="hover:text-blue-600 transition-colors"
+          disabled={isPending}
+        >
+          {isPending ? <Loader2 className="animate-spin" /> : "Sign Out"}
+        </button>
 
         {/* Profile Card */}
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>
           </CardHeader>
+
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-semibold text-lg">
