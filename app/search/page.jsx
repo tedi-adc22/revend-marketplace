@@ -1,14 +1,18 @@
 import CategoryPage from "@/components/CategoryPageUI/CategoryPage";
 import { getFilteredListings } from "@/lib/actions/data";
 
-// Replaces special chars so it doesn't break Postg
-function sanitizeSearchTerm(term) {
-  return term.replace(/[%,()]/g, "");
+function sanitizeSearchQuery(input) {
+  if (!input) return "";
+  return input
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_")
+    .replace(/[(),]/g, "");
 }
 
 export default async function SearchPage({ searchParams }) {
   const sParams = await searchParams;
-  const searchQuery = sanitizeSearchTerm(sParams?.q?.trim() || "");
+  const searchQuery = sanitizeSearchQuery(sParams?.q?.trim() || "");
 
   if (!searchQuery) {
     return (
@@ -25,7 +29,6 @@ export default async function SearchPage({ searchParams }) {
   }
 
   const searchFilter = `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`;
-
   const currentPage = Math.max(1, parseInt(sParams.page || "1", 10));
 
   const { listings, count, totalPages, maxDatabasePrice, error } =
