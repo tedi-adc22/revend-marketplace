@@ -29,10 +29,9 @@ export default function CategoryPage({
 
   const [viewMode, setViewMode] = useState("list");
 
-  const categoryName =
-    CATEGORIES.find((c) => c.value === category)?.label ||
-    searchQuery ||
-    "All Listings";
+  const categoryName = searchQuery
+    ? `Results for "${searchQuery}"`
+    : CATEGORIES.find((c) => c.value === category)?.labe || "All Listings";
 
   const updateUrlParams = (updates, resetPage = true) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -61,7 +60,7 @@ export default function CategoryPage({
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 pb-16 font-sans">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">
             {categoryName}
@@ -416,7 +415,7 @@ export default function CategoryPage({
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }
