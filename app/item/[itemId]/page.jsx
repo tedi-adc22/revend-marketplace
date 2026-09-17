@@ -1,4 +1,4 @@
-import ItemListingPage from "@/components/itemlisting/ItemListing";
+import ItemListingPage from "@/components/itemlisting/ItemListingPage";
 import ViewTracker from "@/components/itemlisting/ViewTracker";
 import { notFound } from "next/navigation";
 import { getListingById } from "@/lib/actions/data";
