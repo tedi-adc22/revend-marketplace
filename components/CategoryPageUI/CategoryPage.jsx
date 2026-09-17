@@ -7,6 +7,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import PriceRangeSlider from "./PriceRangeSlider";
 import { CATEGORIES } from "@/lib/constants/categories";
 import { getVisiblePages } from "@/lib/utils";
+import { CONDITIONS } from "@/lib/constants/conditions";
 
 const formatViews = (count = 0) => {
   if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
@@ -86,10 +87,11 @@ export default function CategoryPage({
             className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm transition-colors cursor-pointer focus:outline-none"
           >
             <option value="All">Condition: All</option>
-            <option value="New">New</option>
-            <option value="Used - Like New">Used - Like New</option>
-            <option value="Used - Good">Used - Good</option>
-            <option value="Used - Fair">Used - Fair</option>
+            {CONDITIONS.map((cond) => (
+              <option key={cond} value={cond}>
+                {cond}
+              </option>
+            ))}
           </select>
         </div>
 

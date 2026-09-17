@@ -24,6 +24,7 @@ import {
   MAX_CHARACTERS_DESCRIPTION,
   MAX_TITLE_LENGTH,
   MAX_LOCATION_LENGTH,
+  MAX_TOTAL_BYTES,
 } from "@/lib/constants/limits";
 
 export default function NewListingForm() {
@@ -109,12 +110,17 @@ export default function NewListingForm() {
       formData.append("images", imgObj.file);
     });
 
-    // Client-side guard against large payload submissions
-    const totalSize = formData.reduce((acc, file) => acc + file.size, 0);
-    if (totalSize > 10 * 1024 * 1024) {
-      // 33 MB total
+    // Client-side check for file size of text
+    const totalSize = Array.from(formData.values()).reduce((acc, value) => {
+      if (value instanceof File) {
+        return acc + value.size;
+      }
+      return acc;
+    }, 0);
+
+    if (totalSize > MAX_TOTAL_BYTES) {
       toast.error(
-        "Total image upload size exceeds 10MB. Please select smaller files.",
+        "Total upload payload exceeds 33MB. Please select smaller files.",
       );
       return;
     }
