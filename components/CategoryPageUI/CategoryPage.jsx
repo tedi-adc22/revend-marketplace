@@ -34,6 +34,13 @@ export default function CategoryPage({
     ? `Results for "${searchQuery}"`
     : CATEGORIES.find((c) => c.value === category)?.label || "All Listings";
 
+  const SORT_OPTIONS = [
+    { value: "Newest", label: "Newest First" },
+    { value: "Most Popular", label: "Most Popular" },
+    { value: "Price Low", label: "Price: Low to High" },
+    { value: "Price High", label: "Price: High to Low" },
+  ];
+
   const updateUrlParams = (updates, resetPage = true) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -106,7 +113,7 @@ export default function CategoryPage({
 
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex items-center gap-1 cursor-pointer">
-              <svg
+              {/* <svg
                 className="w-4 h-4 text-gray-500 shrink-0"
                 fill="none"
                 stroke="currentColor"
@@ -118,9 +125,9 @@ export default function CategoryPage({
                   strokeWidth="2"
                   d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
                 />
-              </svg>
-              <span className="hidden sm:flex">Sort:</span>
-              <select
+              </svg> */}
+              {/* <span className="hidden sm:flex">Sort:</span> */}
+              {/* <select
                 value={currentSort}
                 onChange={(e) => updateUrlParams({ sort: e.target.value })}
                 className="bg-transparent font-bold text-gray-900 focus:outline-none cursor-pointer text-xs"
@@ -129,7 +136,7 @@ export default function CategoryPage({
                 <option value="Most Popular">Most Popular</option>
                 <option value="Price Low">Price: Low to High</option>
                 <option value="Price High">Price: High to Low</option>
-              </select>
+              </select> */}
             </div>
 
             {/* VIEW MODE SWITCHER: Hidden on mobile (< sm breakpoint) */}
@@ -214,41 +221,39 @@ export default function CategoryPage({
                   {viewMode === "list" ? (
                     <div className="flex flex-col sm:flex-row items-stretch">
                       {/* Top / Left section */}
-                      <div className="sm:w-1/2 p-3 sm:p-4 flex gap-3 sm:gap-4 border-b sm:border-b-0 sm:border-r border-gray-100">
-                        <div className="relative w-28 h-24 sm:w-48 sm:h-36 shrink-0 rounded-md bg-gray-100 overflow-hidden border border-gray-100">
+                      <div className="sm:w-1/2 p-3 sm:p-4 flex gap-3.5 sm:gap-4 sm:border-r border-gray-100">
+                        <div className="relative w-36 h-36 sm:w-48 sm:h-36 shrink-0 rounded-lg bg-gray-100 overflow-hidden border border-gray-100">
                           <Image
                             src={imageSrc}
                             alt={item.title}
                             fill
-                            sizes="(max-width: 640px) 112px, 192px"
+                            sizes="(max-width: 640px) 144px, 192px"
                             priority={index < 4}
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
+                          {/* Mobile: condition badge sits on the image so the title gets the full width, might change */}
+                          {item.condition && (
+                            <span className="sm:hidden absolute bottom-1.5 left-1.5 px-2 py-0.5 bg-white/90 backdrop-blur-sm text-emerald-700 text-[11px] font-bold rounded-full shadow-sm">
+                              {item.condition}
+                            </span>
+                          )}
                         </div>
 
                         <div className="flex flex-col justify-between py-0.5 min-w-0 flex-1">
-                          <div>
-                            {/* Condition badge shown on mobile inline with title */}
-                            <div className="flex items-center justify-between gap-2 mb-1">
-                              <h3 className="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-orange-500 transition-colors truncate">
-                                {item.title}
-                              </h3>
-                              {item.condition && (
-                                <span className="sm:hidden px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-200/60 shrink-0">
-                                  {item.condition}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-base sm:text-xl font-black text-gray-900">
+                          <div className="space-y-1">
+                            <h3 className="text-[15px] sm:text-sm font-semibold sm:font-bold text-gray-900 leading-snug group-hover:text-orange-500 transition-colors line-clamp-2 sm:line-clamp-1">
+                              {item.title}
+                            </h3>
+                            <p className="text-xl font-black text-gray-900">
                               €{Number(item.price).toFixed(2)}
                             </p>
                           </div>
 
-                          <div className="space-y-0.5 sm:space-y-1 mt-2">
+                          <div className="space-y-1 mt-2">
                             {item.location && (
-                              <div className="flex items-center gap-1 text-[11px] sm:text-xs text-gray-500">
+                              <div className="flex items-center gap-1 text-xs text-gray-500">
                                 <svg
-                                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-400 shrink-0"
+                                  className="w-3.5 h-3.5 text-gray-400 shrink-0"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -271,7 +276,7 @@ export default function CategoryPage({
                                 </span>
                               </div>
                             )}
-                            <div className="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-gray-400">
+                            <div className=" flex items-center gap-2 sm:gap-3 text-xs text-gray-400">
                               <p className="truncate">
                                 By{" "}
                                 <span className="font-semibold text-gray-600">
@@ -279,7 +284,7 @@ export default function CategoryPage({
                                 </span>
                               </p>
                               {viewCount > 0 && (
-                                <span className="hidden sm:flex flex items-center  gap-1 text-gray-500 font-medium">
+                                <span className="hidden sm:flex items-center gap-1 text-gray-500 font-medium">
                                   <svg
                                     className="w-3.5 h-3.5 text-gray-400"
                                     fill="none"
