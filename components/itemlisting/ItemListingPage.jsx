@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -30,6 +30,7 @@ function MessageButton({ className = "" }) {
 
 export default function ItemListingPage({ item }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const touchStartX = useRef(null);
 
   if (!item) {
@@ -39,17 +40,36 @@ export default function ItemListingPage({ item }) {
   const images =
     Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
 
-  const nextImage = () => {
+  const nextImage = (e) => {
+    e?.stopPropagation();
     if (images.length <= 1) return;
     setActiveImageIndex((prev) => (prev + 1) % images.length);
   };
 
-  const prevImage = () => {
+  const prevImage = (e) => {
+    e?.stopPropagation();
     if (images.length <= 1) return;
     setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Swipe left/right on the main image (phones only)
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsLightboxOpen(false);
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
+    };
+    if (isLightboxOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden"; // Lock background scroll
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [isLightboxOpen]);
+
+  // Swipe left/right on mobile
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -76,9 +96,6 @@ export default function ItemListingPage({ item }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 space-y-4 sm:space-y-8">
         {/* TOP SECTION: Gallery & Right Information Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
-          {/* LEFT: Image Gallery
-              Phones: main image on top, thumbnails in a row below.
-              lg: thumbnails column on the left, like before. */}
           <div className="lg:col-span-7 flex flex-col-reverse lg:flex-row gap-3 lg:gap-4">
             {/* Thumbnails list */}
             {images.length > 1 && (
@@ -111,7 +128,8 @@ export default function ItemListingPage({ item }) {
             <div
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="relative w-full min-w-0 lg:flex-1 aspect-square sm:aspect-[4/3] touch-pan-y rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group"
+              onClick={() => images.length > 0 && setIsLightboxOpen(true)}
+              className="relative w-full min-w-0 lg:flex-1 aspect-square sm:aspect-[4/3] touch-pan-y rounded-2xl bg-gray-100 overflow-hidden border border-gray-200/80 shadow-sm flex items-center justify-center group cursor-zoom-in"
             >
               {images.length > 0 ? (
                 <Image
@@ -140,6 +158,7 @@ export default function ItemListingPage({ item }) {
                 <button
                   type="button"
                   aria-label="Favorite item"
+                  onClick={(e) => e.stopPropagation()}
                   className="p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow hover:scale-105 active:scale-95 transition-transform text-gray-700 hover:text-red-500"
                 >
                   <svg
@@ -158,8 +177,7 @@ export default function ItemListingPage({ item }) {
                 </button>
               </div>
 
-              {/* Navigation Arrows: always visible on touch devices,
-                  shown on hover on devices with a mouse */}
+              {/* Navigation Arrows */}
               {images.length > 1 && (
                 <>
                   <button
@@ -208,7 +226,7 @@ export default function ItemListingPage({ item }) {
             </div>
           </div>
 
-          {/* RIGHT: Listing Info Side Cards (5 Columns) */}
+          {/* RIGHT: Listing Info Side Cards */}
           <div className="lg:col-span-5 space-y-3 lg:space-y-4">
             <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-200/80 shadow-sm space-y-3">
               {formattedDate && (
@@ -312,13 +330,106 @@ export default function ItemListingPage({ item }) {
         </section>
       </div>
 
-      {/* MOBILE STICKY ACTION BAR */}
-      {/* <div className="lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-gray-200 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <p className="shrink-0 text-xl font-extrabold text-gray-900">
-          €{Number(item.price || 0).toFixed(2)}
-        </p>
-        <MessageButton className="flex flex-1" />
-      </div> */}
+      {/* FULLSCREEN LIGHTBOX MODAL */}
+      {isLightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Close Button */}
+          <button
+            type="button"
+            aria-label="Close fullscreen view"
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-50"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          {/* Expanded Image Container */}
+          <div
+            className="relative w-full h-full max-w-5xl max-h-[85vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <Image
+              src={images[activeImageIndex]}
+              alt={item.title}
+              fill
+              className="object-contain select-none"
+              sizes="100vw"
+              priority
+            />
+
+            {/* Navigation Arrows inside Lightbox */}
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prevImage}
+                  aria-label="Previous image"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all z-10"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2.5"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={nextImage}
+                  aria-label="Next image"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all z-10"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2.5"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </>
+            )}
+
+            {/* Photo Counter */}
+            {images.length > 0 && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full pointer-events-none">
+                {activeImageIndex + 1} / {images.length}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
