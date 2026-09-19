@@ -68,32 +68,30 @@ export default function PriceRangeSlider({
 
   return (
     <Popover>
-      <PopoverTrigger>
-        <div
-          role="button"
-          tabIndex={0}
-          className="px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors cursor-pointer select-none"
+      <PopoverTrigger className="shrink-0 px-4 py-2 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl text-xs font-semibold text-gray-700 shadow-sm flex items-center gap-2 transition-colors cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+        <span>
+          Price: €{priceRange[0]} - €{priceRange[1]}
+        </span>
+        <svg
+          className="w-3.5 h-3.5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <span>
-            Price: €{priceRange[0]} - €{priceRange[1]}
-          </span>
-          <svg
-            className="w-3.5 h-3.5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
       </PopoverTrigger>
 
-      <PopoverContent className="w-80 p-4 space-y-4 rounded-2xl" align="start">
+      {/* Never wider than the screen (minus 1rem margin each side) */}
+      <PopoverContent
+        className="w-[min(20rem,calc(100vw_-_2rem))] p-4 space-y-4 rounded-2xl"
+        align="start"
+      >
         <div className="space-y-1">
           <h4 className="font-bold text-sm text-gray-900">Price Range</h4>
           <p className="text-xs text-gray-500">
@@ -107,7 +105,7 @@ export default function PriceRangeSlider({
           max={max}
           step={step}
           onValueChange={handleValueChange}
-          className="my-4"
+          className="my-4 [&_[data-slot=slider-thumb]]:size-6"
         />
 
         <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
