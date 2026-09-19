@@ -27,13 +27,14 @@ export default async function SearchPage({ searchParams }) {
       />
     );
   }
-
-  const searchFilter = `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`;
+  // Old searchFilter = `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`;
+  const searchFilter = `title.ilike.%${searchQuery}%`;
   const currentPage = Math.max(1, parseInt(sParams.page || "1", 10));
 
   const { listings, count, totalPages, maxDatabasePrice, error } =
     await getFilteredListings({
-      baseFilterFn: (q) => q.eq("status", "active").or(searchFilter),
+      // baseFilterFn: (q) => q.eq("status", "active").or(searchFilter)
+      baseFilterFn: (q) => q.or(searchFilter),
       page: currentPage,
       minPrice: sParams.minPrice ? Number(sParams.minPrice) : null,
       maxPrice: sParams.maxPrice ? Number(sParams.maxPrice) : null,
