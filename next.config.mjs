@@ -2,7 +2,8 @@
 const nextConfig = {
   /* config options here */
   experimental: {
-    middlewareClientMaxBodySize: "30mb", // <-- Moved inside experimental
+    // prev experimental.middlewareClientMaxBodySize: "30mb"
+    proxyClientMaxBodySize: "30mb", // <-- Moved inside experimental
     serverActions: {
       bodySizeLimit: "30mb",
     },
