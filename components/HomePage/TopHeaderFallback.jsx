@@ -9,6 +9,19 @@ export default function TopHeaderFallback() {
         <div className="flex-1 max-w-3xl h-9 bg-amber-50/50 rounded-full border border-gray-200 animate-pulse" />
         <div className="w-24 h-4 bg-gray-200 rounded animate-pulse shrink-0" />
       </div>
+
+      {/* Mobile */}
+      <div className="md:hidden flex items-center justify-between h-14 px-4">
+        <div className="text-3xl font-bold tracking-tight">
+          <span className="text-blue-500">Re</span>
+          <span className="text-gray-600">vend</span>
+        </div>
+        <div className="flex gap-3">
+          <div className="w-6 h-6 rounded-full bg-gray-200 animate-pulse" />
+          <div className="w-6 h-6 rounded-full bg-gray-200 animate-pulse" />
+          <div className="w-6 h-6 rounded-full bg-gray-200 animate-pulse" />
+        </div>
+      </div>
     </header>
   );
 }

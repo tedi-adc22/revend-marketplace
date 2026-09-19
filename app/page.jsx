@@ -8,7 +8,9 @@ export default async function Home() {
   return (
     <div>
       {/* <TopHeader /> */}
-      <CategoriesNavBar />
+      <div className="hidden md:block">
+        <CategoriesNavBar />
+      </div>
       <MainContent />
     </div>
   );
