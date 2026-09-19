@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export const ListingCard = ({ listing, index = 0 }) => {
+export const ListingCard = ({ listing, preload = false }) => {
   const imageSrc =
     Array.isArray(listing.images) && listing.images.length > 0
       ? listing.images[0]
@@ -10,16 +10,16 @@ export const ListingCard = ({ listing, index = 0 }) => {
 
   return (
     <Link href={`/item/${listing.id}`} className="flex flex-col group">
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
         {/* Image Container */}
-        <div className="relative w-full aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center">
+        <div className="relative w-full aspect-square rounded-xl sm:rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center">
           {imageSrc ? (
             <Image
               src={imageSrc}
               alt={listing.title}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 20vw"
-              priority={index < 4} // Eager load top 4 items for LCP performance
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+              preload={preload}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
@@ -35,10 +35,10 @@ export const ListingCard = ({ listing, index = 0 }) => {
             onClick={(e) => {
               e.preventDefault();
             }}
-            className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform z-10"
+            className="absolute top-2 right-2 sm:top-3 sm:right-3 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-md hover:scale-105 active:scale-95 transition-transform z-10 after:absolute after:-inset-1.5"
           >
             <svg
-              className="w-5 h-5 text-gray-800"
+              className="w-4 h-4 text-gray-800"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -54,13 +54,13 @@ export const ListingCard = ({ listing, index = 0 }) => {
         </div>
 
         {/* Listing Details */}
-        <div className="mt-3 space-y-1.5 flex-1 flex flex-col justify-between">
+        <div className="mt-2 sm:mt-3 space-y-1.5 flex-1 flex flex-col justify-between">
           <div>
-            <h3 className="font-medium text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+            <h3 className="font-medium text-sm sm:text-base text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
               {listing.title}
             </h3>
 
-            <p className="text-lg font-bold text-gray-900 mt-1">
+            <p className="text-base sm:text-lg font-bold text-gray-900 mt-0.5 sm:mt-1">
               €{Number(listing.price || 0).toFixed(2)}
             </p>
           </div>
