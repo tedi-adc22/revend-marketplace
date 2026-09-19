@@ -15,7 +15,7 @@ export default async function NewListingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-[calc(100dvh-3.5rem)] md:min-h-[calc(100dvh-4rem)] bg-gray-50 px-0 py-4 sm:px-0 sm:py-8">
       <NewListingForm />
     </div>
   );

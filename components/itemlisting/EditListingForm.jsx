@@ -25,6 +25,7 @@ import {
   MAX_TITLE_LENGTH,
   MAX_LOCATION_LENGTH,
 } from "@/lib/constants/limits";
+import FilterPopover from "../CategoryPageUI/FilterPopover";
 
 export default function EditListingForm({ initialListing }) {
   const [isPending, startTransition] = useTransition();
@@ -40,6 +41,9 @@ export default function EditListingForm({ initialListing }) {
 
   const totalImageCount = existingImages.length + newImages.length;
   const characterCount = description.length;
+
+  const [condition, setCondition] = useState(initialListing.condition);
+  const [category, setCategory] = useState(initialListing.category);
 
   // Handle text Change
   const handleDescriptionChange = (e) => {
@@ -136,16 +140,21 @@ export default function EditListingForm({ initialListing }) {
 
   return (
     <Card className="max-w-2xl mx-auto shadow-sm border-gray-200">
-      <CardHeader>
-        <CardTitle className="text-xl font-bold">Edit Listing</CardTitle>
-        <CardDescription>
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="text-lg sm:text-xl font-bold">
+          Edit Listing
+        </CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
           Update details, price, or photos for your item.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmitEditListing} className="space-y-6">
+      <CardContent className="px-4 sm:px-6">
+        <form
+          onSubmit={handleSubmitEditListing}
+          className="space-y-5 sm:space-y-6"
+        >
           {/* Title Input */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
@@ -154,11 +163,12 @@ export default function EditListingForm({ initialListing }) {
               maxLength={MAX_TITLE_LENGTH}
               required
               disabled={isPending}
+              className="text-base sm:text-sm"
             />
           </div>
 
           {/* Description */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="description">Description</Label>
             <div className="relative">
               <textarea
@@ -169,10 +179,10 @@ export default function EditListingForm({ initialListing }) {
                 required
                 disabled={isPending}
                 rows={4}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 pb-7 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y break-words"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 pb-8 text-base sm:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y break-words"
               />
               <div
-                className={`absolute bottom-2 right-3 text-xs font-medium pointer-events-none transition-colors ${
+                className={`absolute bottom-2 right-3 text-[11px] sm:text-xs font-medium pointer-events-none transition-colors ${
                   characterCount >= MAX_CHARACTERS_DESCRIPTION
                     ? "text-red-500 font-bold"
                     : "text-muted-foreground"
@@ -186,7 +196,7 @@ export default function EditListingForm({ initialListing }) {
           {/* Price and Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Price (€) */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="price">Price (€)</Label>
               <div className="relative flex items-center">
                 <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -197,7 +207,7 @@ export default function EditListingForm({ initialListing }) {
                   step="0.01"
                   min="0"
                   defaultValue={initialListing.price}
-                  className="pl-9"
+                  className="pl-9 text-base sm:text-sm"
                   required
                   disabled={isPending}
                   onInput={(e) => {
@@ -213,7 +223,7 @@ export default function EditListingForm({ initialListing }) {
             </div>
 
             {/* Location */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="location">Location</Label>
               <div className="relative flex items-center">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -222,7 +232,7 @@ export default function EditListingForm({ initialListing }) {
                   name="location"
                   maxLength={MAX_LOCATION_LENGTH}
                   defaultValue={initialListing.location}
-                  className="pl-9"
+                  className="pl-9 text-base sm:text-sm"
                   required
                   disabled={isPending}
                 />
@@ -232,40 +242,64 @@ export default function EditListingForm({ initialListing }) {
 
           {/* Condition and Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="condition">Condition</Label>
-              <select
+              {/* <select
                 id="condition"
                 name="condition"
                 defaultValue={initialListing.condition}
                 required
                 disabled={isPending}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-base sm:text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {CONDITIONS.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
                 ))}
-              </select>
+              </select> */}
+
+              <FilterPopover
+                variant="field"
+                id="condition"
+                name="condition"
+                label="Condition"
+                selectedValue={condition}
+                options={CONDITIONS}
+                onSelect={setCondition}
+                disabled={isPending}
+              />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="category">Category</Label>
-              <select
+              {/* <select
                 id="category"
                 name="category"
                 defaultValue={initialListing.category}
                 required
                 disabled={isPending}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-base sm:text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {CATEGORIES.map((cat) => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>
                 ))}
-              </select>
+              </select> */}
+
+              <FilterPopover
+                variant="field"
+                id="category"
+                name="category"
+                label="Category"
+                selectedValue={category}
+                options={CATEGORIES}
+                valueKey={(c) => c.value}
+                displayKey={(c) => c.label}
+                onSelect={setCategory}
+                disabled={isPending}
+              />
             </div>
           </div>
 
@@ -279,7 +313,7 @@ export default function EditListingForm({ initialListing }) {
             </div>
 
             {totalImageCount < MAX_IMAGES && (
-              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:bg-gray-50/50 transition-colors cursor-pointer relative">
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-5 sm:p-6 text-center hover:bg-gray-50/50 transition-colors cursor-pointer relative">
                 <input
                   type="file"
                   accept="image/*"
@@ -289,8 +323,8 @@ export default function EditListingForm({ initialListing }) {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 <div className="flex flex-col items-center justify-center space-y-2">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                  <div className="text-sm">
+                  <Upload className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground" />
+                  <div className="text-xs sm:text-sm">
                     <span className="font-semibold text-primary">
                       Click to upload
                     </span>{" "}
@@ -300,10 +334,10 @@ export default function EditListingForm({ initialListing }) {
               </div>
             )}
 
-            {/* Combined Image Previews (Existing + New Files) */}
+            {/* Combined Previews */}
             {totalImageCount > 0 && (
-              <div className="grid grid-cols-3 gap-3 pt-2">
-                {/* Existing Storage Images */}
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+                {/* Existing Images */}
                 {existingImages.map((url, idx) => (
                   <div
                     key={`existing-${idx}`}
@@ -317,14 +351,15 @@ export default function EditListingForm({ initialListing }) {
                     <button
                       type="button"
                       onClick={() => removeExistingImage(idx)}
-                      className="absolute top-1 right-1 bg-black/60 hover:bg-black text-white p-1 rounded-full transition-colors"
+                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/70 hover:bg-black text-white flex items-center justify-center rounded-full transition-colors"
+                      aria-label="Remove existing image"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))}
 
-                {/* Newly Added File Previews */}
+                {/* New Images */}
                 {newImages.map((img, idx) => (
                   <div
                     key={`new-${idx}`}
@@ -338,9 +373,10 @@ export default function EditListingForm({ initialListing }) {
                     <button
                       type="button"
                       onClick={() => removeNewImage(idx)}
-                      className="absolute top-1 right-1 bg-black/60 hover:bg-black text-white p-1 rounded-full transition-colors"
+                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/70 hover:bg-black text-white flex items-center justify-center rounded-full transition-colors"
+                      aria-label="Remove image"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))}
@@ -349,12 +385,12 @@ export default function EditListingForm({ initialListing }) {
           </div>
 
           {/* Form Actions */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
               disabled={isPending}
-              className="w-1/2 h-11"
+              className="w-1/2 h-11 text-sm font-semibold"
               onClick={() => router.push("/account")}
             >
               Cancel
@@ -362,7 +398,7 @@ export default function EditListingForm({ initialListing }) {
             <Button
               type="submit"
               disabled={isPending || totalImageCount === 0}
-              className="w-1/2 h-11"
+              className="w-1/2 h-11 text-sm font-semibold"
             >
               {isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
